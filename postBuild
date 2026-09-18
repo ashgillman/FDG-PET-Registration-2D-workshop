@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+python prepare_brainweb_data.py --output data/workshop_brainweb.npz
+MPLBACKEND=Agg python -c "import matplotlib.pyplot as plt; plt.figure(); plt.close()"
