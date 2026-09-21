@@ -1,128 +1,138 @@
-# Data sources, processing, and licensing
+# Data sources, processing, licensing, and interpretation
 
 ## Summary
 
-This repository contains code and notebooks, but intentionally excludes all
-BrainWeb source and derived image arrays. During a Binder image build,
-`postBuild` runs `prepare_brainweb_data.py`, which downloads one official source
-file and creates `data/workshop_brainweb.npz`. Notebook execution then requires
-no download.
+The repository contains code and notebooks but not the downloaded TemplateFlow
+volumes or the generated workshop array. During a Binder build, `postBuild`
+runs `prepare_templateflow_data.py`, which retrieves the selected resources and
+creates `data/workshop_templateflow.npz`. Notebook execution then requires no
+network connection.
 
-The PET images are explicitly synthetic educational examples. They are not
-patient scans and contain no identifiable health information.
+MRI anatomy and atlas labels are population-template resources, not a scan of a
+workshop participant. Every PET and fMRI signal is a deterministic educational
+simulation. There are no patient data or identifiable health information.
 
-## Software: Casper O. da Costa-Luis' Python BrainWeb
+## TemplateFlow
 
-- Package: `brainweb==1.7.0`
-- Author: Casper O. da Costa-Luis
-- Repository: <https://github.com/casperdcl/brainweb>
-- PyPI: <https://pypi.org/project/brainweb/>
-- DOI: <https://doi.org/10.5281/zenodo.3269888>
-- Software licence: Mozilla Public License 2.0 (MPL-2.0)
+- Python client: `templateflow==25.0.1`
+- Project: <https://www.templateflow.org/>
+- Archive documentation: <https://www.templateflow.org/usage/archive/>
+- TemplateFlow paper: Ciric et al. (2022), *Nature Methods*.
+  <https://doi.org/10.1038/s41592-022-01681-2>
+- Python-client licence: Apache License 2.0
 
-The preparation pipeline uses the package's official subject URL table, binary
-loader, label definitions (`brainweb.Act`), and T1 tissue intensities
-(`brainweb.T1`). The workshop implements its own deliberately simple 2-D
-translation search so students can understand every candidate tested.
+TemplateFlow is a versioned interface to independently licensed templates and
+atlases. Its client licence does not replace the licence attached to each data
+resource.
 
-The MPL-2.0 licence applies to the Python package's source code. It must not be
-assumed to license the separately downloaded McGill BrainWeb anatomical data.
+## MRI template
 
-## Anatomical source data
+- TemplateFlow identifier: `MNI152NLin2009cSym`
+- Name: ICBM 152 nonlinear symmetric template, version 2009c
+- Resolution: 1 mm isotropic
+- T1-weighted resource:
+  `tpl-MNI152NLin2009cSym_res-1_T1w.nii.gz`
+- Tissue-probability resources: `label-GM`, `label-WM`, and `label-CSF`
+- Original reference: Fonov et al. (2011), *NeuroImage*.
+  <https://doi.org/10.1016/j.neuroimage.2010.07.033>
 
-- Provider: McConnell Brain Imaging Centre, Montreal Neurological Institute,
-  McGill University
-- Dataset: BrainWeb 20 normal anatomical models
-- Subject: 04, discrete/crisp anatomical model
-- Official information page:
-  <https://brainweb.bic.mni.mcgill.ca/brainweb/anatomic_normal_20.html>
-- File selected by Python BrainWeb: `subject_04.bin.gz`
-- Expected array: unsigned 16-bit, `(z, y, x) = (362, 434, 362)`, 0.5 mm grid
-- SHA-256 of the file validated on 2026-09-18:
-  `4f1b1d1e9c143d860e8b3c7dcd0713b759c8556e2c248495212f29bbbbac126b`
+The licence distributed with the TemplateFlow template grants permission to
+use, copy, modify, and distribute the material without fee, provided the
+copyright notice is retained. The licence and attribution should remain with
+redistributed source or derived template data.
 
-The 20-subject model defines background, CSF, grey matter, white matter, fat,
-muscle, skin, skull, vessels, connective tissue, dura, and marrow. This workshop
-uses only CSF, grey matter, and white matter.
+## CerebrA anatomical atlas
 
-## Licensing status and publishing decision
+- Atlas image:
+  `tpl-MNI152NLin2009cSym_res-1_atlas-CerebrA_dseg.nii.gz`
+- Label table:
+  `tpl-MNI152NLin2009cSym_atlas-CerebA_dseg.tsv`
+- Regions used: bilateral hippocampus, amygdala, insula, and rostral anterior
+  cingulate
+- Dataset DOI: <https://doi.org/10.12751/g-node.be5e62>
+- Licence: CC0 1.0 public-domain dedication
+- Atlas paper: Manera et al. (2020), *Scientific Data*.
+  <https://doi.org/10.1038/s41597-020-0557-9>
 
-The official BrainWeb pages provide downloads and request/identify scholarly
-citations, but the pages reviewed did not provide a formal data licence or an
-explicit grant to redistribute the anatomical files or derived arrays. Public
-downloadability alone is not treated here as redistribution permission.
-
-Consequently:
-
-- neither `subject_04.bin.gz` nor `data/workshop_brainweb.npz` should be
-  committed to a public repository without permission or a documented licence;
-- `data/workshop_brainweb.npz` is listed in `data/.gitignore`;
-- local users obtain the source directly from the official site through the
-  Python BrainWeb package;
-- Binder obtains and processes the file during environment build, before the
-  student session.
-
-Project-owner decision still required: confirm with the BrainWeb rights holder
-whether redistribution of the small prepared 2-D array—or public distribution
-of a prebuilt container containing it—is permitted. Until then, publish the
-code-only repository and allow each environment to retrieve the official source.
+The slightly different `CerebrA` and `CerebA` spellings are the identifiers
+used by the TemplateFlow image and table resources respectively.
 
 ## Deterministic processing record
 
-`prepare_brainweb_data.py` performs the following steps:
+`prepare_templateflow_data.py` performs these steps:
 
-1. Downloads or accepts `subject_04.bin.gz` and verifies its SHA-256.
-2. Loads the `(362, 434, 362)` `uint16` volume with `brainweb.load_file`.
-3. Clears the low auxiliary bits and interprets tissue codes with
-   `brainweb.Act.indices`.
-4. Selects axial slice `z = 190`. Candidate slices from `z = 100` to `280` were
-   visually inspected; 190 was chosen for its recognisable outline, cortical
-   grey matter, ventricles, and useful internal registration features.
-5. Crops rows `30:420` and the full `0:362` columns, adds 14 zero-valued pixels
-   on each left/right side to make a square field of view, resamples to
-   `192 × 192`, and flips the display vertically so anterior is at the top and
-   the posterior/occipital side is at the bottom. The additional field-of-view
-   margin prevents the blurred PET edge from being clipped. Left/right is not
-   labelled because it has not been independently verified.
-6. Builds an MRI-like image from Python BrainWeb's T1 tissue intensities, with a
-   mild deterministic bias field, blur, and noise.
-7. Builds low- and high-binding synthetic PET images from tissue masks. Both use
-   the same intensity scale, 3.4-pixel Gaussian blur, and noise realisation.
-8. Creates the challenge by shifting only the low-binding PET by `x = +7`,
-   `y = -5` pixels. Positive x is right; positive y is down.
-9. Stores arrays and machine-readable JSON metadata in a compressed NPZ file.
+1. Retrieves the T1 template, three tissue-probability maps, CerebrA label
+   image, and label table through the TemplateFlow Python client.
+2. Converts each NIfTI image to the closest canonical orientation and verifies
+   that shape and affine geometry match.
+3. Selects the main axial slice at MNI `z = -16 mm`, crops a `193 × 193 mm`
+   field of view, and displays anterior at the top and anatomical left at the
+   left. The retained grid is exactly `1 mm × 1 mm` per pixel.
+4. Produces four atlas panels at levels that clearly show hippocampus
+   (`z = -20 mm`), amygdala (`z = -20 mm`), insula (`z = +2 mm`), and rostral
+   anterior cingulate (`z = -10 mm`).
+5. Creates a baseline FDG-PET simulation from CSF, white-matter, and
+   grey-matter probabilities. It then creates a deliberately visible
+   stress-challenge teaching pattern by adding regional signal before applying
+   a `4 mm` Gaussian blur and deterministic noise.
+6. Generates the registration challenge with a sub-millimetre bilinear
+   translation. The generation transform is calibrated so that the transparent
+   Pearson-correlation search has a clear optimum at `x = -7.2 mm`,
+   `y = +5.3 mm`. Because resampling and cross-modal intensity differences can
+   move a numerical optimum slightly, this is an exercise design target rather
+   than a ground-truth validation experiment.
+7. Generates 64 synthetic fMRI frames with alternating rest/stress-task blocks,
+   a small task-correlated signal in the amygdala/insula teaching mask,
+   spatially smoothed noise, and low-frequency drift. The saved activation map
+   is the per-pixel Pearson correlation with the simulated response timing.
+8. Stores only the prepared 2-D arrays and machine-readable metadata in a
+   compressed NPZ file.
 
-Random seed: `20260918`.
+Random seed: `20260921`.
 
-The grey-matter mask is a tissue segmentation only. It is not presented as a
-specific anatomical region such as precuneus, posterior cingulate, or temporal
-lobe.
-
-## Synthetic PET model
+## Synthetic FDG-PET model
 
 Relative pre-blur tissue signals are:
 
-| Tissue | Low-binding case | High-binding case |
-|---|---:|---:|
-| CSF | 0.08 | 0.08 |
-| White matter | 0.52 | 0.52 |
-| Grey matter | 0.76 | 1.12 |
+| Component | Relative activity |
+|---|---:|
+| CSF | 0.08 |
+| White matter | 0.38 |
+| Grey matter | 0.68 |
+| Additional hippocampal teaching signal | +0.12 |
+| Additional amygdala teaching signal | +0.36 |
+| Additional insular teaching signal | +0.24 |
 
-These numbers are workshop design parameters, not clinical standardized uptake
-values. The common scale allows a fair within-workshop comparison only.
+These are workshop design parameters, not clinical standardized uptake values
+or literature-derived stress effect sizes. The shared scale and noise pattern
+permit controlled within-workshop comparisons only.
 
-## Requested citations and acknowledgements
+## Synthetic fMRI model
 
-Please retain the following when reusing the workshop:
+The bonus time series is a conceptual block-design demonstration. It uses a
+small positive BOLD-like signal, a smoothed task response, noise, and drift so
+that individual frames are ambiguous but the repeated pattern is recoverable.
+It is not a realistic acquisition sequence, statistical parametric analysis,
+or estimate of a biological stress effect.
 
-1. da Costa-Luis, C. O. *BrainWeb-based multimodal models of 20 normal brains*.
-   Zenodo. <https://doi.org/10.5281/zenodo.3269888>
-2. Aubert-Broche, B., Griffin, M., Pike, G. B., Evans, A. C., & Collins, D. L.
-   (2006). Twenty new digital brain phantoms for creation of validation image
-   data bases. *IEEE Transactions on Medical Imaging, 25*(11), 1410–1416.
-   <https://doi.org/10.1109/TMI.2006.883453>
-3. Aubert-Broche, B., Evans, A. C., & Collins, D. L. (2006). A new improved
-   version of the realistic digital brain phantom. *NeuroImage, 32*(1), 138–145.
-   <https://doi.org/10.1016/j.neuroimage.2006.03.052>
-4. BrainWeb, McConnell Brain Imaging Centre, Montreal Neurological Institute,
-   McGill University: <https://brainweb.bic.mni.mcgill.ca/brainweb/>
+## Scientific interpretation safeguards
+
+- Stress recruits distributed, interacting systems; there is no single
+  universal "stress centre" or activation pattern.
+- Region functions are simplified teaching descriptions, not one-function
+  labels.
+- FDG-PET integrates tracer distribution over its uptake period and is not an
+  instantaneous or diagnostic stress measurement.
+- BOLD fMRI is an indirect haemodynamic signal. Real analysis requires motion
+  correction, modelling, statistical inference, and quality control.
+- A successful registration score does not establish clinical validity.
+
+Useful stress-imaging background:
+
+1. Noack et al. (2019). *Imaging stress: an overview of stress induction
+   methods in the MR scanner.*
+   <https://pubmed.ncbi.nlm.nih.gov/30631946/>
+2. Berretz et al. (2021). *The brain under stress: a systematic review and
+   activation likelihood estimation meta-analysis of changes in BOLD signal
+   associated with acute stress exposure.*
+   <https://pubmed.ncbi.nlm.nih.gov/33497786/>

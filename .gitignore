@@ -1,7 +1,9 @@
 .brainweb-cache/
+.templateflow-cache/
 .venv/
 .ipynb_checkpoints/
 .pytest_cache/
 __pycache__/
 *.py[cod]
 data/workshop_brainweb.npz
+data/workshop_templateflow.npz
