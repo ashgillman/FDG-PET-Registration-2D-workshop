@@ -15,6 +15,15 @@ from workshop_helpers import (
 DATA = Path("data/workshop_templateflow.npz")
 
 
+def test_notebook_story_assets_are_present():
+    source = Path("build_notebooks.py").read_text()
+    assert "## 4. Acquiring and processing the data" in source
+    assert "Registration is one part of preprocessing" in source
+    for image in (Path("images/mri_scanner.jpg"), Path("images/pet_scanner.jpg")):
+        assert image.exists()
+        assert image.stat().st_size > 10_000
+
+
 def test_shift_sign_and_no_wrap():
     image = np.zeros((5, 6), dtype=int)
     image[1, 1] = 7

@@ -64,7 +64,7 @@ Click the cell below, then press **Shift + Enter**. The code is complete; you do
 import matplotlib.pyplot as plt
 from IPython.display import Markdown, display
 from workshop_helpers import (
-    animate_rough_optimiser, calculate_correlation_map, compare_pet_patterns,
+    animate_optimiser_search, calculate_correlation_map, compare_pet_patterns,
     how_well_matched, load_workshop_data, normalise_match_score, optimise,
     shift_image, show_alignment, show_fmri_inputs, show_fmri_result,
     show_region_atlas, show_region_measurements, show_score,
@@ -88,6 +88,16 @@ print("✓ Toolkit ready.")
     md(
         """
 ## 2. Meet MRI and PET
+
+### MRI: what tissue is where?
+
+MRI uses a strong magnetic field and radiofrequency pulses to excite hydrogen nuclei in the body's tissues, then measures the signals they produce as they relax. Different tissues produce different signals, allowing MRI to make detailed pictures of anatomy—in simple terms, it shows us **what tissue is where**.
+
+### PET: what is the body doing?
+
+For PET, we inject a small amount of a **tracer** that behaves like a substance important to the body and carries a radioactive tag. The scanner detects signals from the tag, allowing us to map where the tracer goes.
+
+In this workshop the tracer is **FDG**, which behaves similarly to glucose—a sugar that cells use as an energy source. Its distribution gives us information about glucose use in different tissues. PET is therefore called a **functional imaging modality**: it helps tell us about what the body is doing, although its images are blurrier than MRI.
 
 The images below show the same axial level of the brain. The front of the head is at the top.
 
@@ -138,11 +148,22 @@ show_region_atlas(data["region_mri"], data["region_masks"], region_specs);
     ),
     md(
         """
-## 4. The PET has been secretly moved
+## 4. Acquiring and processing the data
 
-We would expect this problem because the scans were acquired separately. Even with careful positioning, the person's head may be shifted between scanners. The scans therefore do not initially align—and we need to fix them.
+Imagine that we have recruited a volunteer for our brain stress study. They visit the imaging centre and we acquire two scans:
 
-The PET below has been displaced from the MRI. Change the two correction values and run the cell again. The cyan line is the MRI brain boundary; it is not a named region.
+| MRI scanner | PET/CT scanner |
+|---|---|
+| <img src="images/mri_scanner.jpg" alt="A modern MRI scanner" style="width:100%;height:300px;object-fit:cover"> | <img src="images/pet_scanner.jpg" alt="A modern PET/CT scanner" style="width:100%;height:300px;object-fit:cover"> |
+| The MRI scanner gives us a detailed picture of the volunteer's brain anatomy. | Modern PET systems are often combined with CT. The PET part detects the tracer distribution that gives us information about glucose use. |
+
+The scans are acquired separately, on different scanners. The volunteer gets off one bed and later lies down on another. Even with careful positioning, we cannot put their head in **exactly** the same place and angle each time.
+
+That means the raw MRI and PET images do not automatically line up. Before we measure PET signal in a named brain region, we need to **process the data** by aligning the PET with the MRI. This alignment step is called **registration**.
+
+### Your registration task
+
+The PET below has the sort of positional mismatch we could get from separate acquisitions. Change the two correction values and run the cell again. The cyan line is the MRI brain boundary; it is not a named region.
 
 **Sign convention:** positive `x` moves PET right; positive `y` moves it down. The units are **millimetres (mm)**. Try values from **−10 mm to +10 mm**; decimals are allowed.
 
@@ -188,7 +209,7 @@ show_score(student_score, label="Your match score");
         """
 ## 6. Let the computer search
 
-First watch a deliberately rough optimiser. It jumps around, then makes smaller guesses as it settles. One graph tracks the x and y corrections; the other tracks the match score.
+First watch the optimiser explore different guesses, then make smaller adjustments as it settles. One graph tracks the x and y corrections; the other tracks the match score.
 
 ### PREDICT
 
@@ -197,13 +218,13 @@ Will it beat your current score?
     ),
     code(
         """
-rough_animation = animate_rough_optimiser(mri, challenge_pet, brain_outline)
-display(rough_animation)
+search_animation = animate_optimiser_search(mri, challenge_pet, brain_outline)
+display(search_animation)
         """
     ),
     md(
         """
-The animation is intentionally scrappy. For the reliable answer below, the computer first searches whole millimetres from −10 to +10, then checks tenths of a millimetre near its best guess. The student interface remains the same two correction values.
+The animation shows the search moving from broad exploration to smaller adjustments. For the reliable answer below, the computer first searches whole millimetres from −10 to +10, then checks tenths of a millimetre near its best guess. The student interface remains the same two correction values.
         """
     ),
     code(
@@ -213,6 +234,15 @@ print(f"Your correction:      x={x_correction_mm:+.1f} mm, y={y_correction_mm:+.
 print(f"Computer correction:  x={best_x:+.1f} mm, y={best_y:+.1f} mm | score {normalise_match_score(automatic_score):.3f} / 1")
 print("The optimiser used a coarse search followed by a 0.1 mm refinement.")
 show_alignment(mri, automatic_pet, brain_outline, title="Automatic registration result");
+        """
+    ),
+    md(
+        """
+### Registration is one part of preprocessing
+
+We have now turned two separately acquired scans into images that share the same coordinate system. This is an example of **preprocessing**: the collection of steps used to prepare raw scanner data before scientific measurement and interpretation.
+
+A real study may also check image quality, correct for movement, reduce noise, account for scanner-specific effects, and transform images into a common reference space. The exact steps depend on the imaging method and the research question. Registration is the preprocessing step we have explored today.
         """
     ),
     md(
@@ -420,7 +450,7 @@ print("✓ Pre-flight imports and data load succeeded.")
 |---:|---|---|
 | 0–7 | Welcome + modalities | Structure, glucose use, and BOLD answer different questions |
 | 7–14 | Meet the regions | No single stress centre; networks and context matter |
-| 14–27 | Manual registration | Separate scans mean separate head positions |
+| 14–27 | Acquire + manually register | A volunteer cannot be positioned identically in two scanners |
 | 27–34 | Match score | A computer needs a numerical definition of better |
 | 34–42 | Optimiser | Coarse-to-fine translation search; what changes if rotation is allowed? |
 | 42–53 | Atlas measurement | Wrong alignment means wrong anatomical pixels |
@@ -439,6 +469,7 @@ The core remains workable as a one-hour session. The bonus is suitable for extra
 - Stress does not have one universal regional pattern. Findings depend on task, timing, population, and analysis.
 - The atlas regions are anatomically meaningful, but their brief functional descriptions are deliberately simplified.
 - BOLD fMRI is an indirect haemodynamic signal. The bonus activation map is a correlation demonstration, not a full general linear model.
+- Registration is one preprocessing step. Real pipelines may also include quality control, motion correction, noise reduction, scanner-specific corrections, and spatial normalisation.
         """
     ),
     md("## Atlas check"),

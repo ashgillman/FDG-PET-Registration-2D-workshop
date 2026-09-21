@@ -174,7 +174,7 @@ def show_score(score: float, *, label: str = "Match score"):
     return fig
 
 
-def animate_rough_optimiser(
+def animate_optimiser_search(
     mri: np.ndarray,
     pet: np.ndarray,
     outline: np.ndarray | None = None,
@@ -182,7 +182,7 @@ def animate_rough_optimiser(
     search_range: int = 10,
     seed: int = 2026,
 ):
-    """Animate a deliberately rough search that eventually reaches the optimum."""
+    """Animate an exploratory search that eventually reaches the optimum."""
     from IPython.display import HTML
     from matplotlib.animation import FuncAnimation
 
@@ -211,7 +211,7 @@ def animate_rough_optimiser(
     image_ax = fig.add_subplot(grid[:, 0])
     offset_ax = fig.add_subplot(grid[0, 1])
     score_ax = fig.add_subplot(grid[1, 1])
-    heading = fig.suptitle("A rough optimiser starts searching…", fontsize=16, fontweight="bold")
+    heading = fig.suptitle("The optimiser starts searching…", fontsize=16, fontweight="bold")
 
     def draw(frame: int):
         x, y = guesses[frame]
@@ -257,7 +257,7 @@ def animate_rough_optimiser(
         elif frame >= 8:
             heading.set_text("Smaller jumps as the optimiser settles")
         else:
-            heading.set_text("A rough optimiser jumps around")
+            heading.set_text("The optimiser explores different guesses")
 
     animation = FuncAnimation(fig, draw, frames=len(guesses), interval=450, repeat=False)
     html = HTML(animation.to_jshtml(fps=2.2, default_mode="once"))

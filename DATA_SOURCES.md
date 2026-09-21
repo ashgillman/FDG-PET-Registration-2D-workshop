@@ -12,6 +12,24 @@ MRI anatomy and atlas labels are population-template resources, not a scan of a
 workshop participant. Every PET and fMRI signal is a deterministic educational
 simulation. There are no patient data or identifiable health information.
 
+## Scanner photographs
+
+The student notebook includes two local photographs so the acquisition story
+remains visible without making a network request during notebook execution:
+
+- `images/mri_scanner.jpg`: *Siemens Magnetom Aera MRI scanner*, by Ptrump16,
+  retrieved from
+  [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Siemens_Magnetom_Aera_MRI_scanner.jpg),
+  licensed under
+  [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+- `images/pet_scanner.jpg`: *PET CT scan*, by liz west, retrieved from
+  [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:PET_CT_scan.jpg),
+  licensed under
+  [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/).
+
+Both images are used unchanged apart from Wikimedia's thumbnail resizing. The
+authors do not endorse this workshop.
+
 ## TemplateFlow
 
 - Python client: `templateflow==25.0.1`
