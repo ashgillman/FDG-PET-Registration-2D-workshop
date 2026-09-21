@@ -1,5 +1,7 @@
 # Neuroimaging stress: 2-D PET–MRI registration workshop
 
+[![Binder](https://gesis.mybinder.org/badge_logo.svg)](https://gesis.mybinder.org/v2/gh/ashgillman/FDG-PET-Registration-2D-workshop/HEAD?urlpath=%2Fdoc%2Ftree%2FNeuroPET_exercise.ipynb)
+
 A click-and-run Jupyter workshop for high-school students. Students explore
 MRI and FDG-PET, identify atlas-defined stress-related brain regions, manually
 align displaced PET to MRI, improve a correlation-based match score, watch a
