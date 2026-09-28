@@ -1,0 +1,21 @@
+# Third-party material and notices
+
+This repository contains original educational material by Ashley Gillman and
+third-party material that remains subject to its own terms. The repository's
+licence notices do not replace those terms.
+
+## Scanner photographs
+
+- `images/mri_scanner.jpg` — *Siemens Magnetom Aera MRI scanner*, Ptrump16,
+  [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+  Source: <https://commons.wikimedia.org/wiki/File:Siemens_Magnetom_Aera_MRI_scanner.jpg>
+- `images/pet_scanner.jpg` — *PET CT scan*, liz west,
+  [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/).
+  Source: <https://commons.wikimedia.org/wiki/File:PET_CT_scan.jpg>
+
+## Template and atlas resources
+
+The MNI152 nonlinear symmetric 2009c MRI template and CerebrA atlas are
+retrieved through TemplateFlow at build time. They are not relicensed by this
+repository. Their provenance and applicable terms are recorded in
+`DATA_SOURCES.md`.

@@ -13,16 +13,44 @@ MRI anatomy and labels come from the MNI152 nonlinear symmetric 2009c template
 and CerebrA atlas retrieved through TemplateFlow. PET and fMRI signals are
 educational simulations. There are no clinical scans or patient data.
 
+## Licence
+
+Original educational content—workshop prose, lesson design, generated teaching
+figures, and other non-code material—is licensed under
+[CC BY 4.0](LICENSE-CC-BY-4.0). Please credit Ashley Gillman, link to the
+licence, and indicate changes when reusing it.
+
+The Python source code and code cells are licensed under the
+[MIT License](LICENSE).
+
+Third-party images, templates, and atlas resources retain their own licences;
+they are not relicensed by this repository. See [NOTICE](NOTICE) and
+`DATA_SOURCES.md` for their attribution and terms.
+
 ## Notebooks
 
 - `NeuroPET_exercise.ipynb` — student-facing, self-explanatory core activity
   plus optional fMRI bonus content.
+- `NeuroPET_exercise_finished.ipynb` — the same activity with every cell
+  already run, for reviewing the plots and results without executing code. Its
+  large embedded animation is omitted; the calculated optimiser result remains
+  directly below it.
 - `NeuroPET_facilitator.ipynb` — run sheet, answers, expected values, science
   language, and technical checks.
 
 Students only need to run cells and optionally change two correction values in
 millimetres. Every cell has a valid initial state, so **Restart Kernel and Run
 All** works.
+
+The hippocampus, amygdala, insula, and anterior cingulate were selected as
+accessible examples from distributed stress-related circuitry described in:
+van der Werff et al. (2013), *Neuroimaging resilience to stress: a review*,
+*Frontiers in Behavioral Neuroscience*, 7, 39.
+<https://doi.org/10.3389/fnbeh.2013.00039>
+
+These regions have many functions and do not form a complete or universal
+"stress circuit." Their inclusion is a teaching choice, not a claim that every
+stress experiment should produce a particular result in each region.
 
 ## Launch on Binder
 
@@ -75,6 +103,9 @@ Expected core checks:
 - `workshop_helpers.py` — compact registration, plotting, regional-measurement,
   and fMRI-analysis API.
 - `build_notebooks.py` — readable source for rebuilding both `.ipynb` files.
+- `NeuroPET_exercise_finished.ipynb` — checked-in executed snapshot of the
+  student notebook; regenerate it with `jupyter nbconvert --execute` after
+  changing the activity.
 - `tests/test_workshop.py` — numerical acceptance checks.
 - `requirements.txt` and `postBuild` — Binder environment and data preparation.
 - `DATA_SOURCES.md` — provenance, licences, transformations, citations, and

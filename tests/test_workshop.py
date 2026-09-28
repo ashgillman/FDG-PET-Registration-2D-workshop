@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import numpy as np
@@ -22,6 +23,18 @@ def test_notebook_story_assets_are_present():
     for image in (Path("images/mri_scanner.jpg"), Path("images/pet_scanner.jpg")):
         assert image.exists()
         assert image.stat().st_size > 10_000
+
+
+def test_finished_notebook_has_successful_executed_outputs():
+    finished = json.loads(Path("NeuroPET_exercise_finished.ipynb").read_text())
+    code_cells = [cell for cell in finished["cells"] if cell["cell_type"] == "code"]
+    assert code_cells
+    assert all(cell["execution_count"] is not None for cell in code_cells)
+    assert not any(
+        output.get("output_type") == "error"
+        for cell in code_cells
+        for output in cell.get("outputs", [])
+    )
 
 
 def test_shift_sign_and_no_wrap():
