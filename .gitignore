@@ -7,3 +7,5 @@ __pycache__/
 *.py[cod]
 data/workshop_brainweb.npz
 data/workshop_templateflow.npz
+NeuroPET_exercise_finished.ipynb
+dist/

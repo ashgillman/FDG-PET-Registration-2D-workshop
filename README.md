@@ -31,10 +31,12 @@ they are not relicensed by this repository. See [NOTICE](NOTICE) and
 
 - `NeuroPET_exercise.ipynb` — student-facing, self-explanatory core activity
   plus optional fMRI bonus content.
-- `NeuroPET_exercise_finished.ipynb` — the same activity with every cell
-  already run, for reviewing the plots and results without executing code. Its
-  large embedded animation is omitted; the calculated optimiser result remains
-  directly below it.
+- A finished copy of the student notebook is built automatically on GitHub
+  Actions, with plots and results already calculated. Download the
+  `NeuroPET-exercise-finished` artifact from the latest successful
+  [Build finished notebook run](https://github.com/ashgillman/FDG-PET-Registration-2D-workshop/actions/workflows/finished-notebook.yml).
+  The animation is omitted from this review copy; the calculated optimiser
+  result remains directly below it. The finished copy is not tracked in Git.
 - `NeuroPET_facilitator.ipynb` — run sheet, answers, expected values, science
   language, and technical checks.
 
@@ -68,6 +70,17 @@ TemplateFlow resources, and prepares a compact local dataset. Notebook execution
 then makes no network requests.
 
 ## Run locally
+
+On Linux, with Nix (the same pinned environment used by GitHub Actions):
+
+```bash
+nix develop --command python prepare_templateflow_data.py
+nix develop --command python scripts/build_finished_notebook.py
+nix develop --command jupyter lab NeuroPET_exercise.ipynb
+```
+
+The finished copy is written to `dist/NeuroPET_exercise_finished.ipynb`.
+On macOS or without Nix, use pip:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -108,9 +121,11 @@ Expected core checks:
 - `workshop_helpers.py` — compact registration, plotting, regional-measurement,
   and fMRI-analysis API.
 - `build_notebooks.py` — readable source for rebuilding both `.ipynb` files.
-- `NeuroPET_exercise_finished.ipynb` — checked-in executed snapshot of the
-  student notebook; regenerate it with `jupyter nbconvert --execute` after
-  changing the activity.
+- `flake.nix` and `flake.lock` — pinned Nix environment for CI and local runs.
+- `scripts/build_finished_notebook.py` — executes and validates a review copy
+  under ignored `dist/`; GitHub Actions publishes it as a downloadable artifact.
+- `.github/workflows/finished-notebook.yml` — builds the finished copy on each
+  push to `main` and on manual dispatch.
 - `tests/test_workshop.py` — numerical acceptance checks.
 - `requirements.txt` and `postBuild` — Binder environment and data preparation.
 - `DATA_SOURCES.md` — provenance, licences, transformations, citations, and

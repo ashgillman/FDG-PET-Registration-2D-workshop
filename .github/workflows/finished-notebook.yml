@@ -1,0 +1,25 @@
+name: Build finished notebook
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - name: Prepare data and verify workshop
+        run: |
+          nix develop --command python prepare_templateflow_data.py
+          nix develop --command python -m pytest -q
+      - name: Execute student notebook
+        run: nix develop --command python scripts/build_finished_notebook.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NeuroPET-exercise-finished
+          path: dist/NeuroPET_exercise_finished.ipynb
+          if-no-files-found: error
+          retention-days: 90
