@@ -84,31 +84,63 @@ def optimise(
     pet: np.ndarray,
     search_range: int = 10,
     fine_step: float = 0.1,
+    coarse_step: int = 2,
 ) -> tuple[np.ndarray, float, float, float]:
-    """Search whole millimetres, then refine to a fraction of a millimetre."""
-    if search_range < 0:
-        raise ValueError("search_range must be non-negative")
+    """Search a small coarse image, then refine promising offsets on full images.
+
+    The final score always uses every pixel. Coarse and fine steps are in mm.
+    """
+    if not isinstance(search_range, (int, np.integer)) or search_range < 0:
+        raise ValueError("search_range must be a non-negative integer")
+    if not isinstance(coarse_step, (int, np.integer)) or not 1 <= coarse_step <= 5:
+        raise ValueError("coarse_step must be a whole number from 1 to 5 mm")
+    if not np.isfinite(fine_step) or fine_step <= 0 or fine_step > 0.5:
+        raise ValueError("fine_step must be greater than 0 and at most 0.5 mm")
+    if mri.shape != pet.shape or mri.ndim != 2:
+        raise ValueError("MRI and PET must be 2-D images with the same dimensions")
+
+    # Every second pixel is enough to locate the promising neighbourhood.
+    # The two refinement passes below use the original full-resolution images.
+    coarse_mri = mri[::2, ::2]
+    coarse_pet = pet[::2, ::2]
     best_score = -np.inf
     best_x = best_y = 0.0
-    best_pet = pet
-    for y_offset in range(-search_range, search_range + 1):
-        for x_offset in range(-search_range, search_range + 1):
-            candidate = shift_image(pet, x_offset, y_offset)
-            score = how_well_matched(mri, candidate)
+    for y_offset in range(-search_range, search_range + 1, coarse_step):
+        for x_offset in range(-search_range, search_range + 1, coarse_step):
+            candidate = ndimage_shift(
+                coarse_pet, shift=(y_offset / 2, x_offset / 2),
+                order=1, mode="constant", cval=0.0, prefilter=False,
+            )
+            score = how_well_matched(coarse_mri, candidate)
             if score > best_score:
-                best_pet, best_x, best_y, best_score = candidate, float(x_offset), float(y_offset), score
+                best_x, best_y, best_score = float(x_offset), float(y_offset), score
 
-    if fine_step <= 0 or fine_step > 1:
-        raise ValueError("fine_step must be greater than 0 and at most 1")
-    fine_x = np.round(np.arange(best_x - 1.0, best_x + 1.0 + fine_step / 2, fine_step), 6)
-    fine_y = np.round(np.arange(best_y - 1.0, best_y + 1.0 + fine_step / 2, fine_step), 6)
-    for y_offset in fine_y:
-        for x_offset in fine_x:
-            candidate = shift_image(pet, x_offset, y_offset)
-            score = how_well_matched(mri, candidate)
-            if score > best_score:
-                best_pet, best_x, best_y, best_score = candidate, float(x_offset), float(y_offset), score
+    def refine(centre_x: float, centre_y: float, radius: float, step: float):
+        best = (-np.inf, centre_x, centre_y)
+        offsets = np.round(np.arange(-radius, radius + step / 2, step), 6)
+        for delta_y in offsets:
+            for delta_x in offsets:
+                x_offset = round(centre_x + float(delta_x), 6)
+                y_offset = round(centre_y + float(delta_y), 6)
+                score = how_well_matched(mri, shift_image(pet, x_offset, y_offset))
+                if score > best[0]:
+                    best = (score, x_offset, y_offset)
+        return best
+
+    # Half-millimetre guesses cover the coarse grid's neighbourhood; the last
+    # pass examines a smaller square with the student's chosen precision.
+    _, best_x, best_y = refine(best_x, best_y, coarse_step / 2, 0.5)
+    best_score, best_x, best_y = refine(best_x, best_y, 0.5, fine_step)
+    best_pet = shift_image(pet, best_x, best_y)
     return best_pet, best_x, best_y, float(best_score)
+
+
+def search_trial_count(search_range: int, coarse_step: int, fine_step: float) -> int:
+    """Count the image comparisons made by the three search passes."""
+    coarse = len(range(-search_range, search_range + 1, coarse_step)) ** 2
+    middle = len(np.arange(-coarse_step / 2, coarse_step / 2 + 0.25, 0.5)) ** 2
+    fine = len(np.arange(-0.5, 0.5 + fine_step / 2, fine_step)) ** 2
+    return coarse + middle + fine
 
 
 def measure_region(pet: np.ndarray, region_mask: np.ndarray) -> float:
@@ -194,15 +226,18 @@ def animate_optimiser_search(
             int(rng.integers(-search_range, search_range + 1)),
             int(rng.integers(-search_range, search_range + 1)),
         )
-        for _ in range(7)
+        for _ in range(4)
     )
-    for radius in [7, 6, 5, 4, 3, 2, 2, 1, 1]:
+    for radius in [6, 4, 3, 2, 1, 1]:
         x = int(np.clip(optimum_x + rng.integers(-radius, radius + 1), -search_range, search_range))
         y = int(np.clip(optimum_y + rng.integers(-radius, radius + 1), -search_range, search_range))
         guesses.append((x, y))
     guesses.extend([(optimum_x, optimum_y), (optimum_x, optimum_y)])
 
+    # Keep full-resolution scores, but render smaller frames in the animation.
     shifted_images = [shift_image(pet, x, y) for x, y in guesses]
+    display_mri = mri[::2, ::2]
+    display_outline = outline[::2, ::2] if outline is not None else None
     display_scores = [
         normalise_match_score(how_well_matched(mri, image)) for image in shifted_images
     ]
@@ -220,13 +255,13 @@ def animate_optimiser_search(
         trail = np.asarray(guesses[: frame + 1])
 
         image_ax.clear()
-        image_ax.imshow(mri, cmap="gray", vmin=0, vmax=1)
+        image_ax.imshow(display_mri, cmap="gray", vmin=0, vmax=1)
         image_ax.imshow(
-            shifted_images[frame], cmap=PET_CMAP,
+            shifted_images[frame][::2, ::2], cmap=PET_CMAP,
             vmin=PET_VMIN, vmax=PET_VMAX, alpha=0.58,
         )
-        if outline is not None:
-            image_ax.contour(outline, levels=[0.5], colors=["#35d0ff"], linewidths=1.0)
+        if display_outline is not None:
+            image_ax.contour(display_outline, levels=[0.5], colors=["#35d0ff"], linewidths=1.0)
         image_ax.set_title(f"Trial {frame + 1}: x={x:+.1f}, y={y:+.1f}")
         image_ax.set_xticks([])
         image_ax.set_yticks([])
@@ -254,7 +289,7 @@ def animate_optimiser_search(
 
         if frame == len(guesses) - 1:
             heading.set_text("Found it — the images are aligned")
-        elif frame >= 8:
+        elif frame >= 5:
             heading.set_text("Smaller jumps as the optimiser settles")
         else:
             heading.set_text("The optimiser explores different guesses")

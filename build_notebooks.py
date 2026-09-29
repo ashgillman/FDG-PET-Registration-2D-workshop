@@ -66,7 +66,7 @@ from IPython.display import Markdown, display
 from workshop_helpers import (
     animate_optimiser_search, calculate_correlation_map, compare_pet_patterns,
     how_well_matched, load_workshop_data, normalise_match_score, optimise,
-    shift_image, show_alignment, show_fmri_inputs, show_fmri_result,
+    search_trial_count, shift_image, show_alignment, show_fmri_inputs, show_fmri_result,
     show_region_atlas, show_region_measurements, show_score,
 )
 
@@ -163,7 +163,7 @@ That means the raw MRI and PET images do not automatically line up. Before we me
 
 ### Your registration task
 
-The PET below has the sort of positional mismatch we could get from separate acquisitions. Change the two correction values and run the cell again. The cyan line is the MRI brain boundary; it is not a named region.
+The PET below has the sort of positional mismatch we could get from separate acquisitions. Change the two correction values and run the cell again. The cyan line is the MRI brain boundary.
 
 **Sign convention:** positive `x` moves PET right; positive `y` moves it down. The units are **millimetres (mm)**. Try values from **−10 mm to +10 mm**; decimals are allowed.
 
@@ -185,7 +185,7 @@ show_alignment(mri, student_pet, brain_outline, title="Your manual registration"
         """
 ## 5. Quantify your match
 
-Eyes are useful, but a computer needs a number. We use **Pearson correlation**, which asks whether the brightness patterns in our MRI and PET tend to vary together. For this deliberately related pair of images, better alignment produces a larger correlation. Clinical multimodal registration may use more sophisticated metrics.
+Your eyes are good at matching the scans, but a computer needs a number on how well they match. We use **Pearson correlation**, which asks whether the brightness patterns in our MRI and PET tend to vary together. For a related pair of images, better alignment produces a larger correlation. Clinical multimodal registration may use more sophisticated metrics.
 
 For this activity the useful raw range is rescaled so the displayed **match score** runs from 0 to 1. Larger is better; it is not percentage accuracy.
 
@@ -224,15 +224,33 @@ display(search_animation)
     ),
     md(
         """
-The animation shows the search moving from broad exploration to smaller adjustments. For the reliable answer below, the computer first searches whole millimetres from −10 to +10, then checks tenths of a millimetre near its best guess. The student interface remains the same two correction values.
+The animation shows the optimiser exploring for better matches. Once it gets close, it uses smaller and finer search steps.
+
+Now try changing the **two step sizes** in the next cell:
+
+- A larger **coarse step** checks fewer starting positions, so it is usually faster, but it could miss the best neighbourhood. Try `1`, `2`, or `4` mm.
+- A larger **fine step** makes fewer guesses near the best position, so it is faster but may stop a little farther from the best alignment. Try `0.1`, `0.2`, or `0.5` mm.
+
+Compare the number of guesses, correction, match score, and run time. The computer calculates the match for each guess; the answers are not stored in a lookup table.
         """
     ),
     code(
         """
-automatic_pet, best_x, best_y, automatic_score = optimise(mri, challenge_pet, search_range=10)
+from time import perf_counter
+
+coarse_step_mm = 2    # Try 1, 2, or 4
+fine_step_mm = 0.1    # Try 0.1, 0.2, or 0.5
+
+search_started = perf_counter()
+automatic_pet, best_x, best_y, automatic_score = optimise(
+    mri, challenge_pet, search_range=10,
+    coarse_step=coarse_step_mm, fine_step=fine_step_mm,
+)
+search_seconds = perf_counter() - search_started
 print(f"Your correction:      x={x_correction_mm:+.1f} mm, y={y_correction_mm:+.1f} mm | score {normalise_match_score(student_score):.3f} / 1")
 print(f"Computer correction:  x={best_x:+.1f} mm, y={best_y:+.1f} mm | score {normalise_match_score(automatic_score):.3f} / 1")
-print("The optimiser used a coarse search followed by a 0.1 mm refinement.")
+print(f"Guesses tested: {search_trial_count(10, coarse_step_mm, fine_step_mm)}")
+print(f"Search time: {search_seconds:.2f} s | coarse step: {coarse_step_mm} mm | fine step: {fine_step_mm} mm")
 show_alignment(mri, automatic_pet, brain_outline, title="Automatic registration result");
         """
     ),
@@ -250,9 +268,10 @@ A real study may also check image quality, correct for movement, reduce noise, a
 ### WHAT DID YOU NOTICE?
 
 - Did the optimiser beat or equal your result?
+- What changed when you made a step size larger or smaller?
 - What extra possibilities would it need to test if PET could also rotate or change size?
 
-<details><summary><b>CHECK YOUR ANSWER</b></summary><br>The computer should find x = −7.2 mm and y = +5.3 mm. Rotation or scaling would create many more candidate transformations, so the search would take longer.</details>
+<details><summary><b>CHECK YOUR ANSWER</b></summary><br>With the starting step sizes, the computer should find x = −7.2 mm and y = +5.3 mm. Larger steps usually need fewer guesses but can give a slightly lower score. Rotation or scaling would create many more candidate transformations, so the search would take longer.</details>
         """
     ),
     md(
@@ -502,6 +521,8 @@ show_alignment(mri, automatic_pet, brain_outline, title="Expected automatic resu
     md(
         """
 The displayed score maps the useful correlation range for this exercise (`0.60` to `0.755`) onto `0` to `1`. Call it a **match score**, never percentage accuracy. Pearson correlation is kept intentionally transparent here; clinical multimodal registration often uses metrics designed for differing image contrasts.
+
+The default optimiser uses a 2 mm search on a smaller preview image, then 0.5 mm and 0.1 mm passes on the full images. Students can change the coarse and fine steps and compare speed with precision. The returned score is always recalculated from the full-resolution registered image.
         """
     ),
     md("## Answer key — atlas measurements"),

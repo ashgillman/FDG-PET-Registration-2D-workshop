@@ -42,6 +42,11 @@ Students only need to run cells and optionally change two correction values in
 millimetres. Every cell has a valid initial state, so **Restart Kernel and Run
 All** works.
 
+In the computer-search section, students can also change the coarse and fine
+search steps, then compare elapsed time and match score. The optimiser evaluates
+image matches as it runs; its coarse pass uses a smaller preview image and its
+final passes use the full images.
+
 The hippocampus, amygdala, insula, and anterior cingulate were selected as
 accessible examples from distributed stress-related circuitry described in:
 van der Werff et al. (2013), *Neuroimaging resilience to stress: a review*,

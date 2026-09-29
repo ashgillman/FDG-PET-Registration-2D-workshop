@@ -82,6 +82,25 @@ def test_registration_and_region_measurement_acceptance_checks():
     ) < 0.02
 
 
+def test_search_step_tradeoff_still_scores_the_returned_image():
+    with np.load(DATA, allow_pickle=False) as data:
+        mri = data["mri"]
+        challenge = data["challenge_pet"]
+
+    fine_image, fine_x, fine_y, fine_score = optimise(
+        mri, challenge, coarse_step=2, fine_step=0.1
+    )
+    fast_image, fast_x, fast_y, fast_score = optimise(
+        mri, challenge, coarse_step=4, fine_step=0.5
+    )
+    np.testing.assert_allclose((fine_x, fine_y), (-7.2, 5.3), atol=0.05)
+    np.testing.assert_allclose(fine_image, shift_image(challenge, fine_x, fine_y))
+    np.testing.assert_allclose(fast_image, shift_image(challenge, fast_x, fast_y))
+    assert np.isclose(fine_score, how_well_matched(mri, fine_image))
+    assert np.isclose(fast_score, how_well_matched(mri, fast_image))
+    assert fine_score >= fast_score
+
+
 def test_synthetic_fmri_analysis_recovers_injected_signal():
     with np.load(DATA, allow_pickle=False) as data:
         calculated = calculate_correlation_map(
