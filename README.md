@@ -3,11 +3,10 @@
 [![Binder](https://gesis.mybinder.org/badge_logo.svg)](https://gesis.mybinder.org/v2/gh/ashgillman/FDG-PET-Registration-2D-workshop/HEAD?urlpath=%2Fdoc%2Ftree%2FNeuroPET_exercise.ipynb)
 
 A click-and-run Jupyter workshop for high-school students. Students explore
-MRI and FDG-PET, identify atlas-defined stress-related brain regions, manually
-align displaced PET to MRI, improve a correlation-based match score, watch a
-coarse-to-fine optimiser, and compare regional tracer measurements. A clearly
-marked bonus section turns a small synthetic fMRI time series into an activation
-map.
+MRI and PET, line up the images, compare a numerical match score, and measure
+PET signal in named brain areas. New terms are explained as they appear. An
+optional bonus section introduces fMRI through repeated images of a pretend
+task.
 
 MRI anatomy and labels come from the MNI152 nonlinear symmetric 2009c template
 and CerebrA atlas retrieved through TemplateFlow. PET and fMRI signals are
@@ -29,16 +28,17 @@ they are not relicensed by this repository. See [NOTICE](NOTICE) and
 
 ## Notebooks
 
-- `NeuroPET_exercise.ipynb` — student-facing, self-explanatory core activity
-  plus optional fMRI bonus content.
+- `NeuroPET_exercise.ipynb` — the full, self-explanatory activity, with many
+  images, complete code cells, and optional fMRI bonus content.
 - A finished copy of the student notebook is built automatically on GitHub
   Actions, with plots and results already calculated. Download the
   `NeuroPET-exercise-finished` artifact from the latest successful
   [Build finished notebook run](https://github.com/ashgillman/FDG-PET-Registration-2D-workshop/actions/workflows/finished-notebook.yml).
   The animation is omitted from this review copy; the calculated optimiser
   result remains directly below it. The finished copy is not tracked in Git.
-- `NeuroPET_facilitator.ipynb` — run sheet, answers, expected values, science
-  language, and technical checks.
+- `FACILITATOR_GUIDE.md` — suggested timing, teaching points, expected
+  answers, and preparation notes. A shorter student notebook may be derived
+  later if the full activity is too long for a class session.
 
 Students only need to run cells and optionally change two correction values in
 millimetres. Every cell has a valid initial state, so **Restart Kernel and Run
@@ -99,9 +99,6 @@ python -m pytest -q
 jupyter nbconvert --to notebook --execute NeuroPET_exercise.ipynb \
   --output /tmp/NeuroPET_exercise.executed.ipynb \
   --ExecutePreprocessor.timeout=240
-jupyter nbconvert --to notebook --execute NeuroPET_facilitator.ipynb \
-  --output /tmp/NeuroPET_facilitator.executed.ipynb \
-  --ExecutePreprocessor.timeout=240
 ```
 
 Expected core checks:
@@ -120,7 +117,7 @@ Expected core checks:
   deterministic PET/fMRI simulation.
 - `workshop_helpers.py` — compact registration, plotting, regional-measurement,
   and fMRI-analysis API.
-- `build_notebooks.py` — readable source for rebuilding both `.ipynb` files.
+- `build_notebooks.py` — readable source for rebuilding the workshop notebook.
 - `flake.nix` and `flake.lock` — pinned Nix environment for CI and local runs.
 - `scripts/build_finished_notebook.py` — executes and validates a review copy
   under ignored `dist/`; GitHub Actions publishes it as a downloadable artifact.

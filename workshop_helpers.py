@@ -171,15 +171,15 @@ def show_alignment(
     axes[0].imshow(mri, cmap="gray", vmin=0, vmax=1)
     axes[0].set_title("MRI: anatomy")
     pet_artist = axes[1].imshow(pet, cmap=PET_CMAP, vmin=PET_VMIN, vmax=PET_VMAX)
-    axes[1].set_title("PET: glucose use")
+    axes[1].set_title("PET: where FDG collected")
     axes[2].imshow(mri, cmap="gray", vmin=0, vmax=1)
     axes[2].imshow(pet, cmap=PET_CMAP, vmin=PET_VMIN, vmax=PET_VMAX, alpha=0.58)
-    axes[2].set_title("Fused image")
+    axes[2].set_title("MRI and PET together")
     if outline is not None:
         for ax in axes:
             ax.contour(outline, levels=[0.5], colors=["#35d0ff"], linewidths=1.0)
     _finish_axes(axes)
-    fig.colorbar(pet_artist, ax=axes[1:], shrink=0.78, label="Relative FDG signal")
+    fig.colorbar(pet_artist, ax=axes[1:], shrink=0.78, label="FDG signal (lesson scale)")
     fig.suptitle(title, fontsize=16, fontweight="bold")
     return fig
 
@@ -200,7 +200,7 @@ def show_score(score: float, *, label: str = "Match score"):
     ax.set_xlim(0, 1)
     ax.set_xticks(np.arange(0, 1.01, 0.2))
     ax.set_yticks([])
-    ax.set_xlabel("Exercise-normalised score: larger means the patterns match better")
+    ax.set_xlabel("Match score: larger means the patterns line up better")
     ax.set_title(f"{label}: {display_score:.3f} / 1", fontweight="bold")
     fig.tight_layout()
     return fig
@@ -315,7 +315,7 @@ def show_region_atlas(
         ax.contour(mask, levels=[0.5], colors=[colour], linewidths=2.0)
         ax.set_title(f"{name}\n{function}", fontsize=11, color="#202020")
     _finish_axes(axes)
-    fig.suptitle("Four regions often discussed in stress neuroimaging", fontsize=16, fontweight="bold")
+    fig.suptitle("Four brain areas linked to stress research", fontsize=16, fontweight="bold")
     return fig
 
 
@@ -332,15 +332,15 @@ def show_region_measurements(
     artist = axes[0].imshow(pet, cmap=PET_CMAP, vmin=PET_VMIN, vmax=PET_VMAX)
     for name, mask in region_masks.items():
         axes[0].contour(mask, levels=[0.5], colors=[REGION_COLOURS[name]], linewidths=1.6)
-    axes[0].set_title("Registered PET + atlas regions")
+    axes[0].set_title("PET after alignment + labelled areas")
     _finish_axes(axes[0])
-    fig.colorbar(artist, ax=axes[0], shrink=0.78, label="Relative FDG signal")
+    fig.colorbar(artist, ax=axes[0], shrink=0.78, label="FDG signal (lesson scale)")
 
     colours = [REGION_COLOURS[name] for name in names]
     axes[1].bar(names, [values[name] for name in names], color=colours)
     axes[1].set_ylim(0, PET_VMAX)
-    axes[1].set_ylabel("Mean relative FDG signal")
-    axes[1].set_title("Same image, different anatomical questions")
+    axes[1].set_ylabel("Average FDG signal")
+    axes[1].set_title("Same image, different brain areas")
     axes[1].tick_params(axis="x", rotation=18)
     axes[1].grid(axis="y", alpha=0.2)
     for index, name in enumerate(names):
@@ -362,20 +362,20 @@ def compare_pet_patterns(
     for ax, image, label in zip(
         axes[:2],
         [baseline_pet, stress_pattern_pet],
-        ["Baseline pattern", "Simulated stress-challenge pattern"],
+        ["First teaching pattern", "Second teaching pattern"],
     ):
         artist = ax.imshow(image, cmap=PET_CMAP, vmin=PET_VMIN, vmax=PET_VMAX)
         ax.set_title(label)
     _finish_axes(axes[:2])
-    fig.colorbar(artist, ax=axes[:2], shrink=0.78, label="Relative FDG signal")
+    fig.colorbar(artist, ax=axes[:2], shrink=0.78, label="FDG signal (lesson scale)")
 
     x = np.arange(len(names))
-    axes[2].bar(x - 0.18, baseline, width=0.36, color="#6c757d", label="Baseline")
-    axes[2].bar(x + 0.18, stress, width=0.36, color="#d1495b", label="Stress pattern")
+    axes[2].bar(x - 0.18, baseline, width=0.36, color="#6c757d", label="First image")
+    axes[2].bar(x + 0.18, stress, width=0.36, color="#d1495b", label="Second image")
     axes[2].set_xticks(x, names, rotation=18)
     axes[2].set_ylim(0, PET_VMAX)
-    axes[2].set_ylabel("Mean relative FDG signal")
-    axes[2].set_title("Atlas-based regional measurements")
+    axes[2].set_ylabel("Average FDG signal")
+    axes[2].set_title("Average in each brain area")
     axes[2].legend()
     axes[2].grid(axis="y", alpha=0.2)
     return fig, dict(zip(names, baseline)), dict(zip(names, stress))
@@ -407,7 +407,7 @@ def show_fmri_inputs(timeseries: np.ndarray, task_blocks: np.ndarray):
     task_ax.fill_between(np.arange(len(task_blocks)), task_blocks, step="mid", color="#d1495b", alpha=0.2)
     task_ax.set_yticks([0, 1], ["rest", "stress task"])
     task_ax.set_xlabel("Scan number")
-    task_ax.set_title("A block design alternates rest and a stress task", fontweight="bold")
+    task_ax.set_title("The task switches between rest and activity", fontweight="bold")
     task_ax.set_xlim(0, len(task_blocks) - 1)
     task_ax.grid(axis="x", alpha=0.2)
 
@@ -417,7 +417,7 @@ def show_fmri_inputs(timeseries: np.ndarray, task_blocks: np.ndarray):
         condition = "stress task" if task_blocks[frame] else "rest"
         ax.set_title(f"Frame {frame + 1}: {condition}")
     _finish_axes(image_axes)
-    fig.suptitle("One fMRI scan is a time series, not one activity picture", fontsize=16, fontweight="bold")
+    fig.suptitle("fMRI takes many images over time", fontsize=16, fontweight="bold")
     return fig
 
 
@@ -434,10 +434,10 @@ def show_fmri_result(
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5), constrained_layout=True)
     scan = np.arange(len(task_blocks))
     axes[0].fill_between(scan, 99.0, 103.0, where=task_blocks > 0, color="#d1495b", alpha=0.13, label="stress-task block")
-    axes[0].plot(scan, roi_signal, color="#31688e", linewidth=2, label="mean ROI signal")
+    axes[0].plot(scan, roi_signal, color="#31688e", linewidth=2, label="average signal in selected area")
     axes[0].plot(scan, 99.2 + 2.6 * task_design, color="#d1495b", linestyle="--", label="expected response shape")
     axes[0].set_xlabel("Scan number")
-    axes[0].set_ylabel("Relative BOLD signal (mean = 100)")
+    axes[0].set_ylabel("BOLD signal (lesson scale)")
     axes[0].set_title("The signal is tiny, noisy, and repeated", fontweight="bold")
     axes[0].legend(fontsize=8)
     axes[0].grid(alpha=0.2)
@@ -445,8 +445,8 @@ def show_fmri_result(
     axes[1].imshow(mean_image, cmap="gray", vmin=0, vmax=1)
     overlay = np.ma.masked_less(correlation_map, threshold)
     artist = axes[1].imshow(overlay, cmap="autumn", vmin=threshold, vmax=0.9, alpha=0.78)
-    axes[1].set_title(f"Pixels correlated with the task\nthreshold = {threshold:.2f}", fontweight="bold")
+    axes[1].set_title(f"Pixels following the task\ncut-off = {threshold:.2f}", fontweight="bold")
     _finish_axes(axes[1])
     fig.colorbar(artist, ax=axes[1], shrink=0.78, label="Correlation with task")
-    fig.suptitle("Synthetic fMRI activation analysis", fontsize=16, fontweight="bold")
+    fig.suptitle("Bonus: finding a pattern across repeated images", fontsize=16, fontweight="bold")
     return fig

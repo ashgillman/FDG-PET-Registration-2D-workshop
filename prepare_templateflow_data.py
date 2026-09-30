@@ -45,7 +45,7 @@ REGION_SPECS = (
         "display_name": "Hippocampus",
         "z_mm": -20,
         "colour": "#22b8cf",
-        "function": "Adds context and memory: where, when, and what happened.",
+        "function": "Helps remember what happened and where.",
     },
     {
         "key": "amygdala",
@@ -53,7 +53,7 @@ REGION_SPECS = (
         "display_name": "Amygdala",
         "z_mm": -20,
         "colour": "#ff4d6d",
-        "function": "Helps detect emotionally important events, including possible threat.",
+        "function": "Helps notice important events, including possible danger.",
     },
     {
         "key": "insula",
@@ -61,7 +61,7 @@ REGION_SPECS = (
         "display_name": "Insula",
         "z_mm": 2,
         "colour": "#ffb703",
-        "function": "Combines body-state signals with attention and emotional salience.",
+        "function": "Helps notice signals from inside the body.",
     },
     {
         "key": "anterior_cingulate",
@@ -69,7 +69,7 @@ REGION_SPECS = (
         "display_name": "Anterior cingulate",
         "z_mm": -10,
         "colour": "#8338ec",
-        "function": "Supports appraisal, attention, conflict monitoring, and regulation.",
+        "function": "Helps direct attention and manage competing responses.",
     },
 )
 
