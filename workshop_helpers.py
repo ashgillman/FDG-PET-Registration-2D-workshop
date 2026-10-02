@@ -85,7 +85,8 @@ def optimise(
     search_range: int = 10,
     fine_step: float = 0.1,
     coarse_step: int = 2,
-) -> tuple[np.ndarray, float, float, float]:
+    return_steps: bool = False,
+) -> tuple:
     """Search a small coarse image, then refine promising offsets on full images.
 
     The final score always uses every pixel. Coarse and fine steps are in mm.
@@ -114,6 +115,11 @@ def optimise(
             score = how_well_matched(coarse_mri, candidate)
             if score > best_score:
                 best_x, best_y, best_score = float(x_offset), float(y_offset), score
+    steps = []
+    if return_steps:
+        steps.append(("Before search", 0, 0.0, 0.0, how_well_matched(mri, pet)))
+        coarse_full_score = how_well_matched(mri, shift_image(pet, best_x, best_y))
+        steps.append(("Large jumps", coarse_step, best_x, best_y, coarse_full_score))
 
     def refine(centre_x: float, centre_y: float, radius: float, step: float):
         best = (-np.inf, centre_x, centre_y)
@@ -129,9 +135,15 @@ def optimise(
 
     # Half-millimetre guesses cover the coarse grid's neighbourhood; the last
     # pass examines a smaller square with the student's chosen precision.
-    _, best_x, best_y = refine(best_x, best_y, coarse_step / 2, 0.5)
+    middle_score, best_x, best_y = refine(best_x, best_y, coarse_step / 2, 0.5)
+    if return_steps:
+        steps.append(("Smaller moves", 0.5, best_x, best_y, middle_score))
     best_score, best_x, best_y = refine(best_x, best_y, 0.5, fine_step)
+    if return_steps:
+        steps.append(("Final moves", fine_step, best_x, best_y, best_score))
     best_pet = shift_image(pet, best_x, best_y)
+    if return_steps:
+        return best_pet, best_x, best_y, float(best_score), steps
     return best_pet, best_x, best_y, float(best_score)
 
 
@@ -159,6 +171,49 @@ def _finish_axes(axes) -> None:
         ax.set_yticks([])
 
 
+def show_mri_and_pet(mri: np.ndarray, pet: np.ndarray):
+    """Show the two scans and a simple combined view."""
+    fig, axes = plt.subplots(1, 3, figsize=(14, 4.6), constrained_layout=True)
+    axes[0].imshow(mri, cmap="gray", vmin=0, vmax=1)
+    axes[0].set_title("MRI: detailed anatomy", fontsize=14)
+    pet_artist = axes[1].imshow(pet, cmap=PET_CMAP, vmin=PET_VMIN, vmax=PET_VMAX)
+    axes[1].set_title("PET: where FDG collected", fontsize=14)
+    axes[2].imshow(mri, cmap="gray", vmin=0, vmax=1)
+    axes[2].imshow(np.ma.masked_less(pet, 0.15), cmap=PET_CMAP,
+                   vmin=PET_VMIN, vmax=PET_VMAX, alpha=0.60)
+    axes[2].set_title("Together: anatomy + PET", fontsize=14)
+    _finish_axes(axes)
+    fig.colorbar(pet_artist, ax=axes[1], shrink=0.82,
+                 label="FDG signal (relative units)")
+    fig.suptitle("Two images, two kinds of information", fontsize=16,
+                 fontweight="bold")
+    return fig
+
+
+def show_zoomed_mri_and_pet(mri: np.ndarray, pet: np.ndarray, zoom_factor: float = 2):
+    """Show the same central area in both scans; 1 means the full image."""
+    if mri.shape != pet.shape or mri.ndim != 2:
+        raise ValueError("MRI and PET must be same-sized 2-D images")
+    if not np.isfinite(zoom_factor) or not 1 <= zoom_factor <= 4:
+        raise ValueError("Choose a zoom factor from 1 to 4")
+    height, width = mri.shape
+    crop_height = round(height / zoom_factor)
+    crop_width = round(width / zoom_factor)
+    top = (height - crop_height) // 2
+    left = (width - crop_width) // 2
+    area = np.s_[top:top + crop_height, left:left + crop_width]
+
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4.4), constrained_layout=True)
+    axes[0].imshow(mri[area], cmap="gray", vmin=0, vmax=1,
+                   interpolation="nearest")
+    axes[0].set_title("MRI close-up: clearer edges")
+    axes[1].imshow(pet[area], cmap=PET_CMAP, vmin=PET_VMIN, vmax=PET_VMAX,
+                   interpolation="nearest")
+    axes[1].set_title("PET close-up: smoother signal")
+    _finish_axes(axes)
+    return fig
+
+
 def show_alignment(
     mri: np.ndarray,
     pet: np.ndarray,
@@ -179,8 +234,37 @@ def show_alignment(
         for ax in axes:
             ax.contour(outline, levels=[0.5], colors=["#35d0ff"], linewidths=1.0)
     _finish_axes(axes)
-    fig.colorbar(pet_artist, ax=axes[1:], shrink=0.78, label="FDG signal (lesson scale)")
+    fig.colorbar(pet_artist, ax=axes[1:], shrink=0.78, label="FDG signal (relative units)")
     fig.suptitle(title, fontsize=16, fontweight="bold")
+    return fig
+
+
+def show_optimiser_steps(
+    mri: np.ndarray,
+    pet: np.ndarray,
+    steps: list[tuple],
+    outline: np.ndarray | None = None,
+):
+    """Show the starting overlay and the result after each search stage."""
+    fig, axes = plt.subplots(1, len(steps), figsize=(4 * len(steps), 4.8),
+                             constrained_layout=True)
+    for ax, (name, step_mm, x_mm, y_mm, score) in zip(axes, steps):
+        aligned = shift_image(pet, x_mm, y_mm)
+        ax.imshow(mri, cmap="gray", vmin=0, vmax=1)
+        ax.imshow(np.ma.masked_less(aligned, 0.15), cmap=PET_CMAP,
+                  vmin=PET_VMIN, vmax=PET_VMAX, alpha=0.58)
+        if outline is not None:
+            ax.contour(outline, levels=[0.5], colors=["#35d0ff"], linewidths=1)
+        stage = name if step_mm == 0 else f"{name} ({step_mm:g} mm)"
+        ax.set_title(
+            f"{stage}\n"
+            f"x={x_mm:+.1f}, y={y_mm:+.1f} mm\n"
+            f"match score {normalise_match_score(score):.3f} / 1",
+            fontsize=11,
+        )
+    _finish_axes(axes)
+    fig.suptitle("How the computer's match improves", fontsize=16,
+                 fontweight="bold")
     return fig
 
 
@@ -319,6 +403,35 @@ def show_region_atlas(
     return fig
 
 
+def show_atlas(region_name: str, data: dict):
+    """Show one named brain area on its clearest MRI slice."""
+    specs = data["metadata"].get("explorer_regions", data["metadata"]["regions"])
+    images = data.get("explorer_mri", data["region_mri"])
+    masks = data.get("explorer_masks", data["region_masks"])
+    choices = [str(spec["display_name"]) for spec in specs]
+    name = region_name.strip().casefold() if isinstance(region_name, str) else ""
+    matching = [index for index, choice in enumerate(choices)
+                if choice.casefold() == name]
+    if not matching:
+        raise ValueError(f"Choose one of: {', '.join(choices)}")
+    index = matching[0]
+    spec = specs[index]
+    fig, ax = plt.subplots(figsize=(5.5, 5.5), constrained_layout=True)
+    ax.imshow(images[index], cmap="gray", vmin=0, vmax=1)
+    ax.contour(masks[index], levels=[0.5],
+               colors=[str(spec["colour"])], linewidths=2)
+    description = str(spec.get("function", ""))
+    ax.set_title(f"{choices[index]}\n{description}".strip(), fontsize=13)
+    _finish_axes(ax)
+    return fig
+
+
+def show_all_atlas_regions(data: dict):
+    """Show the four named brain areas for comparison."""
+    return show_region_atlas(data["region_mri"], data["region_masks"],
+                             data["metadata"]["regions"])
+
+
 def show_region_measurements(
     pet: np.ndarray,
     region_masks: dict[str, np.ndarray],
@@ -334,7 +447,7 @@ def show_region_measurements(
         axes[0].contour(mask, levels=[0.5], colors=[REGION_COLOURS[name]], linewidths=1.6)
     axes[0].set_title("PET after alignment + labelled areas")
     _finish_axes(axes[0])
-    fig.colorbar(artist, ax=axes[0], shrink=0.78, label="FDG signal (lesson scale)")
+    fig.colorbar(artist, ax=axes[0], shrink=0.78, label="FDG signal (relative units)")
 
     colours = [REGION_COLOURS[name] for name in names]
     axes[1].bar(names, [values[name] for name in names], color=colours)
@@ -362,16 +475,16 @@ def compare_pet_patterns(
     for ax, image, label in zip(
         axes[:2],
         [baseline_pet, stress_pattern_pet],
-        ["First teaching pattern", "Second teaching pattern"],
+        ["Example low-stress pattern", "Example high-stress pattern"],
     ):
         artist = ax.imshow(image, cmap=PET_CMAP, vmin=PET_VMIN, vmax=PET_VMAX)
         ax.set_title(label)
     _finish_axes(axes[:2])
-    fig.colorbar(artist, ax=axes[:2], shrink=0.78, label="FDG signal (lesson scale)")
+    fig.colorbar(artist, ax=axes[:2], shrink=0.78, label="FDG signal (relative units)")
 
     x = np.arange(len(names))
-    axes[2].bar(x - 0.18, baseline, width=0.36, color="#6c757d", label="First image")
-    axes[2].bar(x + 0.18, stress, width=0.36, color="#d1495b", label="Second image")
+    axes[2].bar(x - 0.18, baseline, width=0.36, color="#6c757d", label="Low-stress example")
+    axes[2].bar(x + 0.18, stress, width=0.36, color="#d1495b", label="High-stress example")
     axes[2].set_xticks(x, names, rotation=18)
     axes[2].set_ylim(0, PET_VMAX)
     axes[2].set_ylabel("Average FDG signal")
@@ -379,6 +492,40 @@ def compare_pet_patterns(
     axes[2].legend()
     axes[2].grid(axis="y", alpha=0.2)
     return fig, dict(zip(names, baseline)), dict(zip(names, stress))
+
+
+def show_stress_associations(n_volunteers: int):
+    """Generate and plot one made-for-class group of volunteers."""
+    if not isinstance(n_volunteers, (int, np.integer)) or not 5 <= n_volunteers <= 500:
+        raise ValueError("Choose between 5 and 500 volunteers")
+
+    rng = np.random.default_rng()
+    stress = rng.uniform(0, 10, n_volunteers)
+    regions = (
+        ("Amygdala", 0.54, 0.035),
+        ("Insula", 0.51, 0.018),
+        ("Hippocampus", 0.49, 0.006),
+        ("Anterior cingulate", 0.48, 0.0),
+    )
+
+    fig, axes = plt.subplots(2, 2, figsize=(10.5, 8), sharex=True, sharey=True)
+    fig.subplots_adjust(left=0.10, right=0.98, bottom=0.11, top=0.88,
+                        hspace=0.30, wspace=0.16)
+    for ax, (name, baseline, slope) in zip(axes.flat, regions):
+        signal = baseline + slope * (stress - 5) + rng.normal(0, 0.10, n_volunteers)
+        x, y = stress, signal
+        ax.scatter(x, y, s=38 if n_volunteers <= 50 else 19, alpha=0.6,
+                   color=REGION_COLOURS[name], edgecolors="none")
+        association = np.corrcoef(x, y)[0, 1]
+        ax.set_title(f"{name}   r = {association:+.2f}", fontsize=12)
+        ax.set_xlim(0, 10)
+        ax.set_ylim(0, 1)
+        ax.grid(alpha=0.2)
+    fig.supxlabel("How stressed volunteers felt (0–10)")
+    fig.supylabel("PET signal in this brain area (relative units)")
+    fig.suptitle(f"Study of {n_volunteers} volunteers", y=0.98,
+                 fontsize=16, fontweight="bold")
+    return fig
 
 
 def calculate_correlation_map(timeseries: np.ndarray, task_design: np.ndarray) -> np.ndarray:
@@ -437,7 +584,7 @@ def show_fmri_result(
     axes[0].plot(scan, roi_signal, color="#31688e", linewidth=2, label="average signal in selected area")
     axes[0].plot(scan, 99.2 + 2.6 * task_design, color="#d1495b", linestyle="--", label="expected response shape")
     axes[0].set_xlabel("Scan number")
-    axes[0].set_ylabel("BOLD signal (lesson scale)")
+    axes[0].set_ylabel("BOLD signal (relative units)")
     axes[0].set_title("The signal is tiny, noisy, and repeated", fontweight="bold")
     axes[0].legend(fontsize=8)
     axes[0].grid(alpha=0.2)

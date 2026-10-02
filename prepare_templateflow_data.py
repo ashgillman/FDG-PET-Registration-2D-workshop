@@ -73,6 +73,19 @@ REGION_SPECS = (
     },
 )
 
+EXTRA_ATLAS_REGIONS = (
+    ("Thalamus", "Thalamus"),
+    ("Caudate", "Caudate"),
+    ("Putamen", "Putamen"),
+    ("Brainstem", "Brainstem"),
+    ("Cerebellum", "Cerebellum Gray Matter"),
+    ("Lateral occipital", "Lateral Occipital"),
+    ("Precentral", "Precentral"),
+    ("Postcentral", "Postcentral"),
+    ("Superior temporal", "Superior Temporal"),
+    ("Lateral ventricle", "Lateral Ventricle"),
+)
+
 
 def shift_image(image: np.ndarray, x_offset_mm: float, y_offset_mm: float) -> np.ndarray:
     """Subpixel translation with fixed dimensions and zero-filled borders."""
@@ -306,6 +319,30 @@ def prepare(cache_dir: Path, output: Path) -> dict[str, object]:
         atlas_slice = axial_slice(volumes["atlas"], reference, spec["z_mm"], order=0)
         region_masks.append(region_mask(atlas_slice, label_ids, spec["atlas_name"]))
 
+    explorer_specs = list(REGION_SPECS)
+    explorer_mri = list(region_mri)
+    explorer_masks = list(region_masks)
+    cropped_atlas = volumes["atlas"][:, CROP_Y, :]
+    for display_name, atlas_name in EXTRA_ATLAS_REGIONS:
+        counts_by_slice = np.count_nonzero(
+            np.isin(cropped_atlas, label_ids[atlas_name]), axis=(0, 1)
+        )
+        best_index = int(np.argmax(counts_by_slice))
+        z_mm = int(round(
+            reference.affine[2, 2] * best_index + reference.affine[2, 3]
+        ))
+        explorer_specs.append({
+            "display_name": display_name,
+            "atlas_name": atlas_name,
+            "z_mm": z_mm,
+            "colour": "#35b8d0",
+        })
+        explorer_mri.append(
+            normalise_mri(axial_slice(volumes["t1"], reference, z_mm, order=1))
+        )
+        atlas_slice = axial_slice(volumes["atlas"], reference, z_mm, order=0)
+        explorer_masks.append(region_mask(atlas_slice, label_ids, atlas_name))
+
     fmri_activation = main_regions["amygdala"] | main_regions["insula"]
     fmri = make_fmri(mri, brain_mask, fmri_activation, rng)
 
@@ -332,6 +369,7 @@ def prepare(cache_dir: Path, output: Path) -> dict[str, object]:
         "fmri_status": "synthetic educational BOLD time series; not patient data or a validated stress signature",
         "pet_blur_sigma_mm": 4.0,
         "regions": list(REGION_SPECS),
+        "explorer_regions": explorer_specs,
         "source_files": {key: path.name for key, path in paths.items()},
     }
 
@@ -349,6 +387,8 @@ def prepare(cache_dir: Path, output: Path) -> dict[str, object]:
         insula_mask=main_regions["insula"],
         region_mri=np.stack(region_mri).astype(np.float32),
         region_masks=np.stack(region_masks),
+        explorer_mri=np.stack(explorer_mri).astype(np.float32),
+        explorer_masks=np.stack(explorer_masks),
         metadata=np.array(json.dumps(metadata)),
         **fmri,
     )

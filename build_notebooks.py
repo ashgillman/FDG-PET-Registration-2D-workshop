@@ -62,14 +62,14 @@ Click the cell below, then press **Shift + Enter**. The code is complete; you do
     ),
     code(
         """
-import matplotlib.pyplot as plt
-import numpy as np
 from IPython.display import Markdown, display
 from workshop_helpers import (
     animate_optimiser_search, compare_pet_patterns,
     how_well_matched, load_workshop_data, normalise_match_score, optimise,
-    search_trial_count, shift_image, show_alignment,
-    show_region_atlas, show_region_measurements, show_score,
+    search_trial_count, shift_image, show_alignment, show_all_atlas_regions,
+    show_atlas, show_mri_and_pet, show_optimiser_steps,
+    show_region_measurements, show_score,
+    show_zoomed_mri_and_pet,
 )
 
 data = load_workshop_data()
@@ -78,7 +78,6 @@ brain_outline = data["brain_mask"]
 baseline_pet = data["baseline_pet"]
 stress_pattern_pet = data["stress_pattern_pet"]
 challenge_pet = data["challenge_pet"]
-region_specs = data["metadata"]["regions"]
 region_masks = {
     "Hippocampus": data["hippocampus_mask"],
     "Amygdala": data["amygdala_mask"],
@@ -101,7 +100,7 @@ For PET, a person receives a small injection of a **tracer**. A tracer is a subs
 
 The tracer in this lesson is called **FDG**. It is similar to glucose, a sugar cells use for energy. By seeing where FDG collects, we get clues about glucose use. This is why PET can help answer **what is the body doing?** It does not show thoughts or measure stress directly. It also looks blurrier than MRI.
 
-Both pictures below show a slice through the brain, as though we looked down from above. The front of the head is at the top. The third panel puts the two images together, so you can see why both kinds of information are useful. The PET colours are on a lesson scale: brighter means more detected FDG signal.
+Both pictures below show a slice through the brain, as though we looked down from above. The front of the head is at the top. The third panel puts the two images together, so you can see why both kinds of information are useful. The PET colours show **relative FDG signal**: brighter means more FDG was detected in this example, but the numbers are not clinical measurements.
 
 ### PREDICT
 
@@ -110,19 +109,7 @@ Which image shows the edges of brain structures most clearly? Which image shows 
     ),
     code(
         """
-fig, axes = plt.subplots(1, 3, figsize=(14, 4.6), constrained_layout=True)
-axes[0].imshow(mri, cmap="gray", vmin=0, vmax=1)
-axes[0].set_title("MRI: detailed anatomy", fontsize=14)
-pet_artist = axes[1].imshow(stress_pattern_pet, cmap="magma", vmin=0, vmax=1.0)
-axes[1].set_title("PET: where FDG collected", fontsize=14)
-axes[2].imshow(mri, cmap="gray", vmin=0, vmax=1)
-axes[2].imshow(np.ma.masked_less(stress_pattern_pet, 0.15), cmap="magma", vmin=0, vmax=1, alpha=0.60)
-axes[2].set_title("Together: anatomy + PET", fontsize=14)
-for ax in axes:
-    ax.set_xticks([])
-    ax.set_yticks([])
-fig.colorbar(pet_artist, ax=axes[1], shrink=0.82, label="FDG signal (lesson scale)")
-fig.suptitle("Two images, two kinds of information", fontsize=16, fontweight="bold");
+show_mri_and_pet(mri, stress_pattern_pet);
         """
     ),
     md(
@@ -134,28 +121,20 @@ fig.suptitle("Two images, two kinds of information", fontsize=16, fontweight="bo
         """
 ### Look closer: why do we need both?
 
-The next two pictures enlarge the same central area. Look for sharp lines in MRI and smoother patches in PET. A bright PET patch is easier to locate when you can see the MRI structure beneath it.
+The next two pictures enlarge the same central area. Look for sharp lines in MRI and smoother patches in PET. Change `zoom_factor` and run the cell again: try `1.5`, `2`, or `3`. Larger numbers move closer.
         """
     ),
     code(
         """
-centre_y, centre_x = (size // 2 for size in mri.shape)
-zoom = np.s_[centre_y - 45:centre_y + 45, centre_x - 50:centre_x + 50]
-fig, axes = plt.subplots(1, 2, figsize=(10, 4.4), constrained_layout=True)
-axes[0].imshow(mri[zoom], cmap="gray", vmin=0, vmax=1, interpolation="nearest")
-axes[0].set_title("MRI close-up: clearer edges")
-axes[1].imshow(stress_pattern_pet[zoom], cmap="magma", vmin=0, vmax=1, interpolation="nearest")
-axes[1].set_title("PET close-up: smoother signal")
-for ax in axes:
-    ax.set_xticks([])
-    ax.set_yticks([])
+zoom_factor = 2  # Try 1.5, 2, or 3
+show_zoomed_mri_and_pet(mri, stress_pattern_pet, zoom_factor);
         """
     ),
     md(
         """
 ## 3. Four regions in the stress story
 
-An **atlas** is a labelled map of the brain. Researchers can place its labels over an MRI to find named areas, rather than saying only "that bright patch over there". The coloured pictures below show four such areas. Each is shown on a brain slice where it is easy to see.
+An **atlas** is a labelled map of the brain. Researchers can place its labels over an MRI to find named areas, rather than saying only "that bright patch over there". The coloured outline below shows one area on a brain slice where it is easy to see.
 
 Researchers often study these four areas when investigating stress. They work with other areas and have many jobs beyond this short description:
 
@@ -165,11 +144,24 @@ Researchers often study these four areas when investigating stress. They work wi
 - **Anterior cingulate:** helps direct attention and manage competing responses.
 
 These areas do many other jobs too. There is no simple rule that they all "light up" whenever someone feels stress. What a study finds depends on the person, the task, and how and when the brain is measured.
+
+Start with **Hippocampus**, **Amygdala**, **Insula**, or **Anterior cingulate**. Then try other atlas labels: **Thalamus**, **Caudate**, **Putamen**, **Brainstem**, **Cerebellum**, **Lateral occipital**, **Precentral**, **Postcentral**, **Superior temporal**, or **Lateral ventricle**. These are more examples of what the atlas can label; they are not another list of "stress centres". Change only the name below and run the cell again.
         """
     ),
     code(
         """
-show_region_atlas(data["region_mri"], data["region_masks"], region_specs);
+region_to_show = "Hippocampus"  # Also try "Thalamus" or "Cerebellum"
+show_atlas(region_to_show, data);
+        """
+    ),
+    md(
+        """
+Now compare all four areas together. The outlines use the same colours as the regional measurements later in the lesson.
+        """
+    ),
+    code(
+        """
+show_all_atlas_regions(data);
         """
     ),
     md(
@@ -191,6 +183,8 @@ That means the MRI and PET images do not automatically line up. Before we measur
 
 The PET below has been moved to mimic the sort of mismatch we could get from two separate scanner visits. Change the two numbers and run the cell again. The cyan line shows the edge of the brain in the MRI.
 
+**Hard mode:** The outline makes matching easier. To try without it, change `outline_to_show` to `None` in the cell below. Change it back to `brain_outline` whenever you want the hint again.
+
 **How the numbers work:** positive `x` moves PET right; positive `y` moves it down. The units are **millimetres (mm)**. Try values from **−10 mm to +10 mm**; decimals are allowed.
 
 ### CHANGE ONLY THE TWO NUMBERS BELOW
@@ -202,9 +196,10 @@ Start at zero. Use the outer edge first, then compare details in the combined MR
         """
 x_correction_mm = 0.0
 y_correction_mm = 0.0
+outline_to_show = brain_outline  # Hard mode: change brain_outline to None
 
 student_pet = shift_image(challenge_pet, x_correction_mm, y_correction_mm)
-show_alignment(mri, student_pet, brain_outline, title="Your manual registration");
+show_alignment(mri, student_pet, outline_to_show, title="Your manual registration");
         """
     ),
     md(
@@ -257,7 +252,7 @@ Now try changing the **two step sizes** in the next cell:
 - The **coarse step** is the size of the early jumps. A larger jump checks fewer positions, so it is usually faster, but may skip over a good area. Try `1`, `2`, or `4` mm.
 - The **fine step** is the size of the final small moves. A larger value makes fewer guesses, but may stop a little farther from the best match. Try `0.1`, `0.2`, or `0.5` mm.
 
-Compare the number of guesses, final position, match score, and run time.
+Compare the number of guesses, final position, match score, and run time. The four pictures below show the MRI/PET overlay before the search and after its large, medium, and final moves. Watch how the PET image shifts closer to the MRI outline.
         """
     ),
     code(
@@ -268,16 +263,17 @@ coarse_step_mm = 2    # Try 1, 2, or 4
 fine_step_mm = 0.1    # Try 0.1, 0.2, or 0.5
 
 search_started = perf_counter()
-automatic_pet, best_x, best_y, automatic_score = optimise(
+automatic_pet, best_x, best_y, automatic_score, search_steps = optimise(
     mri, challenge_pet, search_range=10,
     coarse_step=coarse_step_mm, fine_step=fine_step_mm,
+    return_steps=True,
 )
 search_seconds = perf_counter() - search_started
 print(f"Your correction:      x={x_correction_mm:+.1f} mm, y={y_correction_mm:+.1f} mm | score {normalise_match_score(student_score):.3f} / 1")
 print(f"Computer correction:  x={best_x:+.1f} mm, y={best_y:+.1f} mm | score {normalise_match_score(automatic_score):.3f} / 1")
 print(f"Guesses tested: {search_trial_count(10, coarse_step_mm, fine_step_mm)}")
 print(f"Search time: {search_seconds:.2f} s | coarse step: {coarse_step_mm} mm | fine step: {fine_step_mm} mm")
-show_alignment(mri, automatic_pet, brain_outline, title="Automatic registration result");
+show_optimiser_steps(mri, challenge_pet, search_steps, brain_outline);
         """
     ),
     md(
@@ -306,7 +302,7 @@ A real study may also check whether each image is usable, correct for movement, 
 
 Because the PET and MRI now line up, we can use the labelled brain map to select the same area in both. The computer can then calculate the **average PET signal** inside each area.
 
-The numbers are on a lesson scale. They are useful for comparing these images, but they are not clinical measurements.
+These are **relative FDG signal** values: useful for comparing these teaching images, but not clinical measurements.
         """
     ),
     code(
@@ -371,6 +367,31 @@ comparison_figure, baseline_values, stress_values = compare_pet_patterns(
     ),
     md(
         """
+## 9. What changes when we study more people?
+
+Imagine our study has finished collecting scans. Each volunteer rated how stressed they felt from **0 to 10**, and we measured a PET signal in each brain area. The dots below are simulated data, not real people or a realistic PET test for stress. Each dot is one volunteer.
+
+Change `number_of_study_participants` below to **5, 10, 50, or 500**, then run the cell again. Each run draws a new group of that size. Which areas seem to have a clearer upward trend? Which look uncertain when you see only a few dots? How many participants in your study do you think you need?
+
+The number **r** is a *correlation*: one way to describe the **effect size**, or strength of a link, between two measurements. Here, **+1** means a very strong upward pattern, **0** means little straight-line pattern, and **−1** means a downward pattern. A larger group does not make the underlying link stronger; it makes our estimate less easily swayed by chance.
+        """
+    ),
+    code(
+        """
+from workshop_helpers import show_stress_associations
+
+number_of_study_participants = 10  # Try 5, 10, 50, or 500
+
+show_stress_associations(number_of_study_participants);
+        """
+    ),
+    md(
+        """
+<details><summary><b>WHAT DO THE DOTS SUGGEST?</b></summary><br>In this teaching example, the amygdala has the strongest built-in link, the insula has a smaller one, the hippocampus has a weak one, and the anterior cingulate has none. With only 5 or 10 people, random variation can make even an area with no built-in link look convincing. At 500, the stronger patterns are clearer, but the weak one may still be hard to judge. Correlation alone cannot show that stress <i>caused</i> a PET change.</details>
+        """
+    ),
+    md(
+        """
 # ⭐ BONUS CONTENT — find task-related changes with fMRI
 
 You have reached the optional bonus. We have used PET to follow an injected substance and compare brain areas. Another type of scan, **functional MRI (fMRI)**, can look for changes while a person does a task. It uses the MRI scanner rather than a PET tracer.
@@ -427,7 +448,7 @@ show_fmri_result(
     ),
     md(
         """
-## 9. Recap
+## 10. Recap
 
 <div style="text-align:center;font-size:1.18em;padding:16px;background:#f3f1fa;border-radius:8px"><b>See the structure → line up the images → choose a brain area → measure → think carefully about what the number means</b></div>
 

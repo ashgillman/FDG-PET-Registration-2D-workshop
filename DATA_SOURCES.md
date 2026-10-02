@@ -65,8 +65,10 @@ redistributed source or derived template data.
   `tpl-MNI152NLin2009cSym_res-1_atlas-CerebrA_dseg.nii.gz`
 - Label table:
   `tpl-MNI152NLin2009cSym_atlas-CerebA_dseg.tsv`
-- Regions used: bilateral hippocampus, amygdala, insula, and rostral anterior
-  cingulate
+- Four focus regions: bilateral hippocampus, amygdala, insula, and rostral
+  anterior cingulate. The atlas explorer also offers thalamus, caudate,
+  putamen, brainstem, cerebellum gray matter, lateral occipital, precentral,
+  postcentral, superior temporal, and lateral ventricle labels.
 - Dataset DOI: <https://doi.org/10.12751/g-node.be5e62>
 - Licence: CC0 1.0 public-domain dedication
 - Atlas paper: Manera et al. (2020), *Scientific Data*.
@@ -86,9 +88,11 @@ used by the TemplateFlow image and table resources respectively.
 3. Selects the main axial slice at MNI `z = -16 mm`, crops a `193 × 193 mm`
    field of view, and displays anterior at the top and anatomical left at the
    left. The retained grid is exactly `1 mm × 1 mm` per pixel.
-4. Produces four atlas panels at levels that clearly show hippocampus
+4. Produces four focus atlas panels at levels that clearly show hippocampus
    (`z = -20 mm`), amygdala (`z = -20 mm`), insula (`z = +2 mm`), and rostral
-   anterior cingulate (`z = -10 mm`).
+   anterior cingulate (`z = -10 mm`). For each extra atlas-explorer label, it
+   selects the axial slice containing the most labelled pixels in the cropped
+   field of view.
 5. Creates a baseline FDG-PET simulation from CSF, white-matter, and
    grey-matter probabilities. It then creates a deliberately visible
    stress-challenge teaching pattern by adding regional signal before applying
@@ -124,6 +128,23 @@ Relative pre-blur tissue signals are:
 These are workshop design parameters, not clinical standardized uptake values
 or literature-derived stress effect sizes. The shared scale and noise pattern
 permit controlled within-workshop comparisons only.
+
+## Interactive study cohort
+
+The group-size exercise generates a separate, made-for-class cohort each time
+its cell runs. Stress ratings are uniformly distributed from 0 to 10; each
+regional signal is a chosen baseline plus a chosen slope times `(rating - 5)`
+and independent Gaussian noise with standard deviation 0.10. The slopes per
+rating point are amygdala 0.035, insula 0.018, hippocampus 0.006, and anterior
+cingulate 0. Students choose a group size from 5 to 500. Rerunning the cell
+draws a fresh random group of that size. The plotted `r` is Pearson
+correlation in the generated group.
+
+These signals are not measurements from the PET images elsewhere in the
+workshop, real volunteers, or literature-derived stress effects. The example
+demonstrates how correlation estimates fluctuate with sample size and how
+stronger associations are easier to see. It cannot support a causal or clinical
+claim about stress and FDG uptake.
 
 ## Synthetic fMRI model
 

@@ -3,10 +3,12 @@
 [![Binder](https://gesis.mybinder.org/badge_logo.svg)](https://gesis.mybinder.org/v2/gh/ashgillman/FDG-PET-Registration-2D-workshop/HEAD?urlpath=%2Fdoc%2Ftree%2FNeuroPET_exercise.ipynb)
 
 A click-and-run Jupyter workshop for high-school students. Students explore
-MRI and PET, line up the images, compare a numerical match score, and measure
-PET signal in named brain areas. New terms are explained as they appear. An
-optional bonus section introduces fMRI through repeated images of a pretend
-task.
+MRI and PET, zoom into the scans, explore named areas in a brain atlas, line up
+the images, compare a numerical match score, and measure PET signal. A short
+exercise uses a made-for-class group
+of volunteers to show how sample size affects a correlation estimate.
+New terms are explained as they appear. An optional bonus section introduces
+fMRI through repeated images of a pretend task.
 
 MRI anatomy and labels come from the MNI152 nonlinear symmetric 2009c template
 and CerebrA atlas retrieved through TemplateFlow. PET and fMRI signals are
@@ -29,13 +31,15 @@ they are not relicensed by this repository. See [NOTICE](NOTICE) and
 ## Notebooks
 
 - `NeuroPET_exercise.ipynb` — the full, self-explanatory activity, with many
-  images, complete code cells, and optional fMRI bonus content.
+  images, complete code cells, an editable group-size number, and optional
+  fMRI bonus content.
 - A finished copy of the student notebook is built automatically on GitHub
   Actions, with plots and results already calculated. Download the
   `NeuroPET-exercise-finished` artifact from the latest successful
   [Build finished notebook run](https://github.com/ashgillman/FDG-PET-Registration-2D-workshop/actions/workflows/finished-notebook.yml).
   The animation is omitted from this review copy; the calculated optimiser
-  result remains directly below it. The finished copy is not tracked in Git.
+  result remains directly below it. The group-size exercise runs at its
+  starting value of 10 volunteers. The finished copy is not tracked in Git.
 - `FACILITATOR_GUIDE.md` — suggested timing, teaching points, expected
   answers, and preparation notes. A shorter student notebook may be derived
   later if the full activity is too long for a class session.
