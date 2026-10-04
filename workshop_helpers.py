@@ -432,6 +432,23 @@ def show_all_atlas_regions(data: dict):
                              data["metadata"]["regions"])
 
 
+def show_atlas_quiz(data: dict):
+    """Show numbered atlas areas without revealing their names."""
+    specs = data["metadata"]["regions"]
+    choices = [str(spec["display_name"]) for spec in specs]
+    order = ["Insula", "Hippocampus", "Anterior cingulate", "Amygdala"]
+    fig, axes = plt.subplots(1, 4, figsize=(14, 4), constrained_layout=True)
+    for letter, name, ax in zip("ABCD", order, axes):
+        index = choices.index(name)
+        ax.imshow(data["region_mri"][index], cmap="gray", vmin=0, vmax=1)
+        ax.contour(data["region_masks"][index], levels=[0.5],
+                   colors=["#35d0ff"], linewidths=2)
+        ax.set_title(f"Picture {letter}", fontsize=14)
+    _finish_axes(axes)
+    fig.suptitle("Which brain area is outlined?", fontsize=16)
+    return fig
+
+
 def show_region_measurements(
     pet: np.ndarray,
     region_masks: dict[str, np.ndarray],

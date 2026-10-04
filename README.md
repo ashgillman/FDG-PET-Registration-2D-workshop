@@ -3,7 +3,7 @@
 [![Binder](https://gesis.mybinder.org/badge_logo.svg)](https://gesis.mybinder.org/v2/gh/ashgillman/FDG-PET-Registration-2D-workshop/HEAD?urlpath=%2Fdoc%2Ftree%2FNeuroPET_exercise.ipynb)
 
 A click-and-run Jupyter workshop for high-school students. Students explore
-MRI and PET, zoom into the scans, explore named areas in a brain atlas, line up
+MRI and PET, identify areas using a brain atlas, line up
 the images, compare a numerical match score, and measure PET signal. A short
 exercise uses a made-for-class group
 of volunteers to show how sample size affects a correlation estimate.
@@ -48,10 +48,9 @@ Students only need to run cells and optionally change two correction values in
 millimetres. Every cell has a valid initial state, so **Restart Kernel and Run
 All** works.
 
-In the computer-search section, students can also change the coarse and fine
-search steps, then compare elapsed time and match score. The optimiser evaluates
-image matches as it runs; its coarse pass uses a smaller preview image and its
-final passes use the full images.
+The computer-search section shows an animated search and the resulting alignment.
+Students can compare it with their own manual match.
+The optimiser evaluates image matches as it runs; its coarse pass uses a smaller preview image and its final passes use the full images.
 
 The hippocampus, amygdala, insula, and anterior cingulate were selected as
 accessible examples from distributed stress-related circuitry described in:

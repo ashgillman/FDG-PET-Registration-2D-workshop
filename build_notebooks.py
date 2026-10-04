@@ -66,10 +66,9 @@ from IPython.display import Markdown, display
 from workshop_helpers import (
     animate_optimiser_search, compare_pet_patterns,
     how_well_matched, load_workshop_data, normalise_match_score, optimise,
-    search_trial_count, shift_image, show_alignment, show_all_atlas_regions,
+    shift_image, show_alignment, show_all_atlas_regions, show_atlas_quiz,
     show_atlas, show_mri_and_pet, show_optimiser_steps,
     show_region_measurements, show_score,
-    show_zoomed_mri_and_pet,
 )
 
 data = load_workshop_data()
@@ -94,11 +93,26 @@ print("✓ Toolkit ready.")
 
 An MRI scanner uses a strong magnet and short pulses of radio waves. Different tissues respond in different ways, so the scanner can make a detailed picture of the brain's structure. MRI helps answer **what tissue is where?**
 
+[Watch a short animation of how MRI works — the first two minutes](https://www.youtube.com/embed/FvOezMIL9BU?start=0&end=120).
+Watch for three steps: the magnet lines up tiny magnets in the body, radio waves tip them, and the scanner detects their response.
+If the clip link does not play, [open the original video](https://www.youtube.com/watch?v=FvOezMIL9BU) and stop at **2:00**.
+
 ### PET: what is the body doing?
 
 For PET, a person receives a small injection of a **tracer**. A tracer is a substance we can follow inside the body. It has a radioactive tag that gives off signals the PET scanner can detect. Think of the tag as making the substance visible to the scanner.
 
 The tracer in this lesson is called **FDG**. It is similar to glucose, a sugar cells use for energy. By seeing where FDG collects, we get clues about glucose use. This is why PET can help answer **what is the body doing?** It does not show thoughts or measure stress directly. It also looks blurrier than MRI.
+
+![Glucose and fluorine-18 FDG drawn in the same ring style, with the changed group highlighted](images/glucose_fdg.svg)
+
+These drawings show atoms joined by bonds.
+Both molecules are drawn in the same simplified ring style so their similarity is easier to see.
+You do not need to learn the chemistry: the key change is highlighted.
+An **OH** group in glucose is replaced by **fluorine-18** in FDG.
+The **F** in FDG is fluorine; in the PET tracer, it is the radioactive form **fluorine-18**.
+Its radioactive decay produces signals that let us follow where the tracer collects.
+These drawings leave out the molecules' three-dimensional arrangement and hydrogen atoms attached to carbon.
+Structure references: [glucose](https://pubchem.ncbi.nlm.nih.gov/compound/5793) and [ring-form fluorine-18 FDG](https://pubchem.ncbi.nlm.nih.gov/compound/450503), NIH PubChem.
 
 Both pictures below show a slice through the brain, as though we looked down from above. The front of the head is at the top. The third panel puts the two images together, so you can see why both kinds of information are useful. The PET colours show **relative FDG signal**: brighter means more FDG was detected in this example, but the numbers are not clinical measurements.
 
@@ -119,22 +133,44 @@ show_mri_and_pet(mri, stress_pattern_pet);
     ),
     md(
         """
-### Look closer: why do we need both?
+## 3. Can you name the brain areas?
 
-The next two pictures enlarge the same central area. Look for sharp lines in MRI and smoother patches in PET. Change `zoom_factor` and run the cell again: try `1.5`, `2`, or `3`. Larger numbers move closer.
+An **atlas** is a labelled map of the brain.
+Use the atlas explorer below as a reference, then name the areas outlined in pictures **A–D**.
+Each picture is a slice through the brain; different areas are easiest to see at different slice levels.
+
+Try these names in the explorer: **Hippocampus**, **Amygdala**, **Insula**, **Anterior cingulate**, **Thalamus**, **Caudate**, **Putamen**, **Brainstem**, **Cerebellum**, **Lateral occipital**, **Precentral**, **Postcentral**, **Superior temporal**, or **Lateral ventricle**.
         """
     ),
     code(
         """
-zoom_factor = 2  # Try 1.5, 2, or 3
-show_zoomed_mri_and_pet(mri, stress_pattern_pet, zoom_factor);
+region_to_show = "Hippocampus"  # Change the name to explore the atlas
+show_atlas(region_to_show, data);
         """
     ),
     md(
         """
-## 3. Four regions in the stress story
+### Match the pictures to names
 
-An **atlas** is a labelled map of the brain. Researchers can place its labels over an MRI to find named areas, rather than saying only "that bright patch over there". The coloured outline below shows one area on a brain slice where it is easy to see.
+Use these four names: **Insula**, **Hippocampus**, **Anterior cingulate**, **Amygdala**.
+Double-click this text cell to fill in your answers, then press **Shift + Enter**:
+
+- A: ...
+- B: ...
+- C: ...
+- D: ...
+        """
+    ),
+    code(
+        """
+show_atlas_quiz(data);
+        """
+    ),
+    md(
+        """
+<details><summary><b>CHECK YOUR ANSWERS</b></summary><br>A: Insula. B: Hippocampus. C: Anterior cingulate. D: Amygdala.</details>
+
+### Four regions in our stress study
 
 Researchers often study these four areas when investigating stress. They work with other areas and have many jobs beyond this short description:
 
@@ -145,17 +181,6 @@ Researchers often study these four areas when investigating stress. They work wi
 
 These areas do many other jobs too. There is no simple rule that they all "light up" whenever someone feels stress. What a study finds depends on the person, the task, and how and when the brain is measured.
 
-Start with **Hippocampus**, **Amygdala**, **Insula**, or **Anterior cingulate**. Then try other atlas labels: **Thalamus**, **Caudate**, **Putamen**, **Brainstem**, **Cerebellum**, **Lateral occipital**, **Precentral**, **Postcentral**, **Superior temporal**, or **Lateral ventricle**. These are more examples of what the atlas can label; they are not another list of "stress centres". Change only the name below and run the cell again.
-        """
-    ),
-    code(
-        """
-region_to_show = "Hippocampus"  # Also try "Thalamus" or "Cerebellum"
-show_atlas(region_to_show, data);
-        """
-    ),
-    md(
-        """
 Now compare all four areas together. The outlines use the same colours as the regional measurements later in the lesson.
         """
     ),
@@ -247,32 +272,17 @@ display(search_animation)
         """
 The animation shows the search exploring possible matches. Once it gets close, it makes smaller moves.
 
-Now try changing the **two step sizes** in the next cell:
-
-- The **coarse step** is the size of the early jumps. A larger jump checks fewer positions, so it is usually faster, but may skip over a good area. Try `1`, `2`, or `4` mm.
-- The **fine step** is the size of the final small moves. A larger value makes fewer guesses, but may stop a little farther from the best match. Try `0.1`, `0.2`, or `0.5` mm.
-
-Compare the number of guesses, final position, match score, and run time. The four pictures below show the MRI/PET overlay before the search and after its large, medium, and final moves. Watch how the PET image shifts closer to the MRI outline.
+Run the next cell to see the computer's result.
+The four pictures show the MRI/PET overlay before the search and after its large, medium, and final moves.
+Watch how the PET image shifts closer to the MRI outline.
         """
     ),
     code(
         """
-from time import perf_counter
-
-coarse_step_mm = 2    # Try 1, 2, or 4
-fine_step_mm = 0.1    # Try 0.1, 0.2, or 0.5
-
-search_started = perf_counter()
 automatic_pet, best_x, best_y, automatic_score, search_steps = optimise(
-    mri, challenge_pet, search_range=10,
-    coarse_step=coarse_step_mm, fine_step=fine_step_mm,
-    return_steps=True,
+    mri, challenge_pet, return_steps=True,
 )
-search_seconds = perf_counter() - search_started
-print(f"Your correction:      x={x_correction_mm:+.1f} mm, y={y_correction_mm:+.1f} mm | score {normalise_match_score(student_score):.3f} / 1")
 print(f"Computer correction:  x={best_x:+.1f} mm, y={best_y:+.1f} mm | score {normalise_match_score(automatic_score):.3f} / 1")
-print(f"Guesses tested: {search_trial_count(10, coarse_step_mm, fine_step_mm)}")
-print(f"Search time: {search_seconds:.2f} s | coarse step: {coarse_step_mm} mm | fine step: {fine_step_mm} mm")
 show_optimiser_steps(mri, challenge_pet, search_steps, brain_outline);
         """
     ),
@@ -290,10 +300,9 @@ A real study may also check whether each image is usable, correct for movement, 
 ### WHAT DID YOU NOTICE?
 
 - Did the optimiser beat or equal your result?
-- What changed when you made a step size larger or smaller?
 - What extra possibilities would it need to test if PET could also rotate or change size?
 
-<details><summary><b>CHECK YOUR ANSWER</b></summary><br>With the starting step sizes, the computer should find x = −7.2 mm and y = +5.3 mm. Larger steps usually need fewer guesses but can give a slightly lower score. If PET could also turn or change size, the computer would have many more possible matches to test.</details>
+<details><summary><b>CHECK YOUR ANSWER</b></summary><br>The computer should find x = −7.2 mm and y = +5.3 mm. If PET could also turn or change size, the computer would have many more possible matches to test.</details>
         """
     ),
     md(
@@ -308,7 +317,7 @@ These are **relative FDG signal** values: useful for comparing these teaching im
     code(
         """
 measurement_figure, registered_values = show_region_measurements(
-    automatic_pet, region_masks,
+    optimise(mri, challenge_pet)[0], region_masks,
     title="Average PET signal after alignment",
 )
 display(Markdown(
@@ -316,22 +325,6 @@ display(Markdown(
     "|---|---:|\\n" +
     "\\n".join(f"| {name} | {value:.3f} |" for name, value in registered_values.items())
 ))
-        """
-    ),
-    code(
-        """
-_, wrong_values = show_region_measurements(
-    challenge_pet, region_masks,
-    title="What happens if we measure before alignment?",
-)
-print("Amygdala measurement")
-print(f"  Before registration: {wrong_values['Amygdala']:.3f}")
-print(f"  After registration:  {registered_values['Amygdala']:.3f}")
-        """
-    ),
-    md(
-        """
-<details><summary><b>WHY DOES REGISTRATION MATTER?</b></summary><br>The labelled brain map stays in the MRI position. If PET is shifted, the chosen area covers some of the wrong PET pixels and misses some of the intended ones. That can change the average, even if the images look close at first glance.</details>
         """
     ),
     md(

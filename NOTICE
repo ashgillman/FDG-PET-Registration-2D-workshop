@@ -19,3 +19,12 @@ The MNI152 nonlinear symmetric 2009c MRI template and CerebrA atlas are
 retrieved through TemplateFlow at build time. They are not relicensed by this
 repository. Their provenance and applicable terms are recorded in
 `DATA_SOURCES.md`.
+
+## Linked introductory resources
+
+The MRI introduction links to the first two minutes of *How does an MRI work? | MRI basics explained | Animation* at <https://www.youtube.com/watch?v=FvOezMIL9BU>.
+The video is linked rather than redistributed and remains subject to its creator's terms.
+
+The PET introduction contains an original simplified connectivity diagram in `images/glucose_fdg.svg`, using matching ring representations and omitting stereochemistry.
+Structure references are NIH PubChem records for glucose (CID 5793) and ring-form fluorine-18 FDG (CID 450503).
+The diagram is original educational material covered by this repository's CC BY 4.0 licence; the linked PubChem records remain external resources.

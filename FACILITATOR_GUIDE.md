@@ -2,19 +2,19 @@
 
 The [full workshop notebook](NeuroPET_exercise.ipynb) is written so students can
 run every cell and read it later without a presenter. In class, pause at the
-predictions and let students experiment with the two registration numbers and
-the optimiser's step sizes. A shorter student edition can be made later if the
+predictions and let students experiment with the two registration numbers.
+A shorter student edition can be made later if the
 full version proves too long.
 
 ## Suggested timing
 
 | Time | Activity | Ask students |
 |---:|---|---|
-| 0–8 min | Meet MRI and PET; inspect the full images and close-ups | Which scan shows structure more clearly? What does the PET colour mean? |
-| 8–14 min | Four brain regions | Why can't one region tell us whether someone is stressed? |
+| 0–8 min | Meet MRI and PET; short MRI clip, molecule drawings, and scan images | Which scan shows structure more clearly? What does the PET colour mean? |
+| 8–14 min | Name atlas areas, then introduce the four focus regions | Which outlines match the named reference images? |
 | 14–27 min | Two scanner visits and manual registration | What happens if you change only left/right, then only up/down? |
 | 27–34 min | Match score | Can you improve the number without being told the answer? |
-| 34–42 min | Computer search | How do larger steps change the number of guesses and final score? |
+| 34–42 min | Computer search | Does the computer improve on your match? |
 | 42–51 min | Regional measurements and PET patterns | Why can a small position error change a regional average? |
 | 51–60 min | Group-size exercise and recap | Does a larger group change the underlying effect, or our confidence in the pattern? |
 | Optional 15–20 min | fMRI bonus | Why are repeated images useful when one image is noisy? |
@@ -42,6 +42,8 @@ section timings visible to students.
   one-function labels or a complete “stress circuit”. The single-region atlas
   explorer also offers ten other labels, so students can see that the atlas is
   a broad anatomical map.
+  Before introducing their functions, students use the named explorer to identify the unnamed pictures.
+  Answers: A = insula, B = hippocampus, C = anterior cingulate, D = amygdala.
 - **PET-pattern comparison:** The second pattern contains deliberately added
   signal near selected regions. The increments are teaching choices, not
   measured stress effects. No single pattern diagnoses stress.
@@ -60,7 +62,9 @@ section timings visible to students.
 
 1. Open Binder ahead of time, or prepare `data/workshop_templateflow.npz`
    locally with `python prepare_templateflow_data.py`. Running the notebook
-   after data preparation needs no network access.
+   after data preparation needs no network access for calculations.
+   The linked MRI clip needs internet access; open it before class.
+   The molecule diagram is bundled with the notebook.
 2. Run the notebook once with **Restart Kernel and Run All**. The editable
    values start in a valid state.
 3. If the animation does not play, continue to the next search cell; its
