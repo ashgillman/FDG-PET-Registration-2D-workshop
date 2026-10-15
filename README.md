@@ -43,6 +43,8 @@ they are not relicensed by this repository. See [NOTICE](NOTICE) and
 - `FACILITATOR_GUIDE.md` — suggested timing, teaching points, expected
   answers, and preparation notes. A shorter student notebook may be derived
   later if the full activity is too long for a class session.
+- `PRESENTATION_RUN_SCRIPT.md` — dot-point speaking notes following one volunteer through scanning, alignment, atlas identification, regional measurement, and evidence across people.
+  It specifies when to introduce concepts, what to show and ask, and how much technical detail to use.
 
 Students only need to run cells and optionally change two correction values in
 millimetres. Every cell has a valid initial state, so **Restart Kernel and Run

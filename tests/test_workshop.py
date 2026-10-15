@@ -30,7 +30,7 @@ def test_measurements_work_when_computer_search_cell_is_skipped():
 
 def test_notebook_story_assets_are_present():
     source = Path("build_notebooks.py").read_text()
-    assert "## 4. Acquiring and processing the data" in source
+    assert "## 3. Two scans, one problem" in source
     assert "Registration is one part of preprocessing" in source
     for image in (Path("images/mri_scanner.jpg"), Path("images/pet_scanner.jpg")):
         assert image.exists()

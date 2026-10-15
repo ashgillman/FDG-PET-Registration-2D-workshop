@@ -37,20 +37,17 @@ student_cells = [
         """
 # 🧠 Brain imaging and stress: line up the images
 
-Stress is not controlled by one single "stress centre". Different parts of the brain help us notice events, remember what happened before, sense changes in the body, and decide what to do next. In this workshop, you will use brain images to ask where some of those parts are and what an imaging scan can tell us about them.
+You are a researcher who wants to know **what happens in the brain when people are stressed**.
+Which brain regions are involved, and how can you find evidence for their involvement?
 
-Brain imaging gives us different views of those systems:
-
-- **MRI** shows the brain's structure: **what tissue is where**.
-- **PET** shows where a small amount of an injected, detectable substance has gone. This gives clues about **what the body is doing**. PET looks blurrier than MRI.
-
-MRI and PET may be taken on different days and different scanners. If the person's head is in a slightly different position, the images will not line up. Later, you will move one image to match the other. Researchers call this **registration**.
-
-Today you are the brain-imaging team. You will inspect MRI and PET images, line them up, use a labelled brain map to find four regions, and compare measurements from those regions. There is an optional bonus activity after the main workshop.
+Earlier studies have suggested some candidate regions — places worth investigating.
+Your team is carrying out a brain-imaging study to test those ideas and see which regions show a relationship with stress in your participants.
+You will collect scans, prepare them, identify brain regions, and compare measurements across people.
+The aim is to find evidence, rather than assume that every candidate region must show a change.
 
 > These pictures are teaching materials. The MRI anatomy and region labels come from shared research resources; the PET values are made for this lesson. They are not scans of a patient and cannot diagnose stress.
 
-<div style="padding:12px 16px;border-left:6px solid #31688e;background:#eef6fb"><b>The main mission</b><br>Look at the scans → line them up → check the match → find brain regions → measure and interpret</div>
+<div style="padding:12px 16px;border-left:6px solid #31688e;background:#eef6fb"><b>Our research question</b><br>Which brain regions are implicated in stress?<br><b>Our study</b><br>Collect scans → prepare the images → identify regions → measure → test the evidence across people</div>
         """
     ),
     md(
@@ -89,7 +86,13 @@ print("✓ Toolkit ready.")
         """
 ## 2. Meet MRI and PET
 
+Our first volunteer arrives at the imaging centre.
+To investigate which regions are involved in stress, we need two kinds of information: where the brain's tissues are, and clues about how they are using energy.
+Two scanners help us answer those different questions.
+
 ### MRI: what tissue is where?
+
+<img src="images/mri_scanner.jpg" alt="A modern MRI scanner" width="480">
 
 An MRI scanner uses a strong magnet and short pulses of radio waves. Different tissues respond in different ways, so the scanner can make a detailed picture of the brain's structure. MRI helps answer **what tissue is where?**
 
@@ -98,6 +101,8 @@ Watch for three steps: the magnet lines up tiny magnets in the body, radio waves
 If the clip link does not play, [open the original video](https://www.youtube.com/watch?v=FvOezMIL9BU) and stop at **2:00**.
 
 ### PET: what is the body doing?
+
+<img src="images/pet_scanner.jpg" alt="A modern PET/CT scanner" width="480">
 
 For PET, a person receives a small injection of a **tracer**. A tracer is a substance we can follow inside the body. It has a radioactive tag that gives off signals the PET scanner can detect. Think of the tag as making the substance visible to the scanner.
 
@@ -109,7 +114,6 @@ These drawings show atoms joined by bonds.
 Both molecules are drawn in the same simplified ring style so their similarity is easier to see.
 You do not need to learn the chemistry: the key change is highlighted.
 An **OH** group in glucose is replaced by **fluorine-18** in FDG.
-The **F** in FDG is fluorine; in the PET tracer, it is the radioactive form **fluorine-18**.
 Its radioactive decay produces signals that let us follow where the tracer collects.
 These drawings leave out the molecules' three-dimensional arrangement and hydrogen atoms attached to carbon.
 Structure references: [glucose](https://pubchem.ncbi.nlm.nih.gov/compound/5793) and [ring-form fluorine-18 FDG](https://pubchem.ncbi.nlm.nih.gov/compound/450503), NIH PubChem.
@@ -133,76 +137,16 @@ show_mri_and_pet(mri, stress_pattern_pet);
     ),
     md(
         """
-## 3. Can you name the brain areas?
+## 3. Two scans, one problem
 
-An **atlas** is a labelled map of the brain.
-Use the atlas explorer below as a reference, then name the areas outlined in pictures **A–D**.
-Each picture is a slice through the brain; different areas are easiest to see at different slice levels.
+Our volunteer has finished both scans.
+But they got off one scanner bed and lay down on another, possibly on a different day.
+We cannot put their head in **exactly** the same position each time.
 
-Try these names in the explorer: **Hippocampus**, **Amygdala**, **Insula**, **Anterior cingulate**, **Thalamus**, **Caudate**, **Putamen**, **Brainstem**, **Cerebellum**, **Lateral occipital**, **Precentral**, **Postcentral**, **Superior temporal**, or **Lateral ventricle**.
-        """
-    ),
-    code(
-        """
-region_to_show = "Hippocampus"  # Change the name to explore the atlas
-show_atlas(region_to_show, data);
-        """
-    ),
-    md(
-        """
-### Match the pictures to names
-
-Use these four names: **Insula**, **Hippocampus**, **Anterior cingulate**, **Amygdala**.
-Double-click this text cell to fill in your answers, then press **Shift + Enter**:
-
-- A: ...
-- B: ...
-- C: ...
-- D: ...
-        """
-    ),
-    code(
-        """
-show_atlas_quiz(data);
-        """
-    ),
-    md(
-        """
-<details><summary><b>CHECK YOUR ANSWERS</b></summary><br>A: Insula. B: Hippocampus. C: Anterior cingulate. D: Amygdala.</details>
-
-### Four regions in our stress study
-
-Researchers often study these four areas when investigating stress. They work with other areas and have many jobs beyond this short description:
-
-- **Hippocampus:** helps us remember what happened and where—*Have I been here before?*
-- **Amygdala:** helps us notice emotionally important events, including possible danger.
-- **Insula:** helps us notice signals from inside the body, such as a racing heart.
-- **Anterior cingulate:** helps direct attention and manage competing responses.
-
-These areas do many other jobs too. There is no simple rule that they all "light up" whenever someone feels stress. What a study finds depends on the person, the task, and how and when the brain is measured.
-
-Now compare all four areas together. The outlines use the same colours as the regional measurements later in the lesson.
-        """
-    ),
-    code(
-        """
-show_all_atlas_regions(data);
-        """
-    ),
-    md(
-        """
-## 4. Acquiring and processing the data
-
-Imagine that we have recruited a volunteer for our brain stress study. They visit the imaging centre and we acquire two scans:
-
-| MRI scanner | PET/CT scanner |
-|---|---|
-| <img src="images/mri_scanner.jpg" alt="A modern MRI scanner" style="width:100%;height:300px;object-fit:cover"> | <img src="images/pet_scanner.jpg" alt="A modern PET/CT scanner" style="width:100%;height:300px;object-fit:cover"> |
-| The MRI scanner gives us a detailed picture of the volunteer's brain structure. | This PET scanner is combined with a CT scanner. The PET part detects signals from the injected FDG tracer. |
-
-The scans are acquired separately, on different scanners. The volunteer gets off one bed and later lies down on another. Even with careful positioning, we cannot put their head in **exactly** the same place and angle each time.
-
-That means the MRI and PET images do not automatically line up. Before we measure the PET signal in a named brain area, we need to move the PET image to match the MRI. This is **registration**.
+Now look at the images from those two visits below.
+What has gone wrong when we put them together?
+Before we can connect the PET signal to the MRI anatomy, we need to line them up.
+Moving one image to match the other is called **registration**.
 
 ### Your registration task
 
@@ -229,7 +173,7 @@ show_alignment(mri, student_pet, outline_to_show, title="Your manual registratio
     ),
     md(
         """
-## 5. Give your match a score
+## 4. How will we know the match is better?
 
 Your eyes can judge whether the scans line up. A computer needs a number. We use **correlation**: a way to score how closely two patterns change together. Here, it compares the light and dark patterns across the MRI and PET images. When the images line up better, the correlation usually rises.
 
@@ -253,7 +197,7 @@ show_score(student_score, label="Your match score");
     ),
     md(
         """
-## 6. Let the computer search
+## 5. Can the computer do our matching job?
 
 The computer can also try many positions for us. This search is called an **optimiser**. Watch it make guesses and gradually focus on the better matches. One graph tracks the left/right and up/down moves; the other tracks the match score.
 
@@ -307,9 +251,79 @@ A real study may also check whether each image is usable, correct for movement, 
     ),
     md(
         """
+## 6. The scans line up — where should we measure?
+
+We have solved the position problem.
+But a bright patch alone does not tell us which brain area it belongs to.
+We need a map before we can turn the PET image into measurements from named areas.
+An **atlas** is that labelled map of the brain.
+
+Use the atlas explorer below as a reference, then name the areas outlined in pictures **A–D**.
+Each picture is a slice through the brain; different areas are easiest to see at different slice levels.
+
+Try these names: **Hippocampus**, **Amygdala**, **Insula**, **Anterior cingulate**, **Thalamus**, **Caudate**, **Putamen**, **Brainstem**, **Cerebellum**, **Lateral occipital**, **Precentral**, **Postcentral**, **Superior temporal**, or **Lateral ventricle**.
+        """
+    ),
+    code(
+        """
+region_to_show = "Hippocampus"  # Change the name to explore the atlas
+show_atlas(region_to_show, data);
+        """
+    ),
+    md(
+        """
+### Match the pictures to names
+
+Use these four names: **Insula**, **Hippocampus**, **Anterior cingulate**, **Amygdala**.
+Double-click this text cell to fill in your answers, then press **Shift + Enter**:
+
+- A: ...
+- B: ...
+- C: ...
+- D: ...
+        """
+    ),
+    code(
+        """
+show_atlas_quiz(data);
+        """
+    ),
+    md(
+        """
+<details><summary><b>CHECK YOUR ANSWERS</b></summary><br>A: Insula. B: Hippocampus. C: Anterior cingulate. D: Amygdala.</details>
+
+### Why choose these four areas for our study?
+
+Earlier research has implicated these four areas in stress-related processes.
+That makes them candidates for our study, rather than a list of results we already know we will find.
+Their functions give us reasons to investigate them:
+
+- **Hippocampus:** helps us remember events and their context — *What happened last time?*
+- **Amygdala:** helps us notice emotionally important events, including possible danger — *Does this matter to me?*
+- **Insula:** helps us notice signals from inside the body — *Why is my heart racing?*
+- **Anterior cingulate:** helps direct attention and manage competing responses — *What should I focus on or do next?*
+
+The areas work with many others and have many jobs.
+Stress is not controlled by one single "stress centre", and there is no rule that these areas all "light up" whenever someone feels stressed.
+Our measurements will help us assess which candidates show evidence of a relationship with stress in our study.
+
+The coloured outlines below will help us connect the map to our measurements.
+        """
+    ),
+    code(
+        """
+show_all_atlas_regions(data);
+        """
+    ),
+    md(
+        """
 ## 7. Measure named brain areas
 
 Because the PET and MRI now line up, we can use the labelled brain map to select the same area in both. The computer can then calculate the **average PET signal** inside each area.
+
+This PET slice shows the hippocampus, amygdala, and insula, so we will measure those three here.
+The anterior cingulate is easier to see at another slice level, as the atlas pictures showed.
+A whole-brain study can measure all four.
 
 These are **relative FDG signal** values: useful for comparing these teaching images, but not clinical measurements.
         """
@@ -331,7 +345,10 @@ display(Markdown(
         """
 ## 8. Compare two PET patterns
 
-The two PET pictures below use the same brain shape, blur, and colour scale. In the second picture we deliberately added extra signal near some of the four labelled regions, so there is a difference to find and measure.
+Now that we can measure named areas, imagine comparing a low-stress visit with a high-stress visit.
+Which candidate regions would show different measurements?
+The two example pictures below use the same brain shape, blur, and colour scale.
+In the second picture we deliberately added extra signal near some labelled regions, so there is a difference to find and measure.
 
 This is a **teaching example**. It does not show what every person's brain does under stress. Real results vary with the experiment and the person.
 
@@ -362,11 +379,21 @@ comparison_figure, baseline_values, stress_values = compare_pet_patterns(
         """
 ## 9. What changes when we study more people?
 
-Imagine our study has finished collecting scans. Each volunteer rated how stressed they felt from **0 to 10**, and we measured a PET signal in each brain area. The dots below are simulated data, not real people or a realistic PET test for stress. Each dot is one volunteer.
+Two pictures can suggest a question, but we need more people to investigate a pattern.
+Imagine our study has now finished collecting scans.
+We repeated the preparation and measurement steps for every volunteer.
+Each volunteer rated how stressed they felt from **0 to 10**, and we measured a PET signal in each brain area.
+The dots below are simulated data, not real people or a realistic PET test for stress.
+Each dot is one volunteer.
 
 Change `number_of_study_participants` below to **5, 10, 50, or 500**, then run the cell again. Each run draws a new group of that size. Which areas seem to have a clearer upward trend? Which look uncertain when you see only a few dots? How many participants in your study do you think you need?
 
-The number **r** is a *correlation*: one way to describe the **effect size**, or strength of a link, between two measurements. Here, **+1** means a very strong upward pattern, **0** means little straight-line pattern, and **−1** means a downward pattern. A larger group does not make the underlying link stronger; it makes our estimate less easily swayed by chance.
+Earlier, correlation helped us compare patterns across two images.
+Here we use the same idea to compare two measurements across people: stress rating and PET signal.
+The number **r** describes the strength and direction of their straight-line relationship.
+That strength is one kind of **effect size**.
+Here, **+1** means a very strong upward pattern, **0** means little straight-line pattern, and **−1** means a downward pattern.
+A larger group does not make the underlying link stronger; it makes our estimate less easily swayed by chance.
         """
     ),
     code(
@@ -381,6 +408,26 @@ show_stress_associations(number_of_study_participants);
     md(
         """
 <details><summary><b>WHAT DO THE DOTS SUGGEST?</b></summary><br>In this teaching example, the amygdala has the strongest built-in link, the insula has a smaller one, the hippocampus has a weak one, and the anterior cingulate has none. With only 5 or 10 people, random variation can make even an area with no built-in link look convincing. At 500, the stronger patterns are clearer, but the weak one may still be hard to judge. Correlation alone cannot show that stress <i>caused</i> a PET change.</details>
+        """
+    ),
+    md(
+        """
+## 10. What can our research team conclude?
+
+Return to our question: **what happens in the brain when people are stressed, and which regions are implicated?**
+Which candidate regions have the clearest evidence of a relationship with stress in the example study?
+Which would need more evidence before you were confident?
+Finding support for a candidate strengthens the case for investigating it; a weak or absent pattern means our study has not clearly supported that candidate.
+
+<div style="text-align:center;font-size:1.18em;padding:16px;background:#f3f1fa;border-radius:8px"><b>Collect two views → line them up → use a map → measure → compare across people</b></div>
+
+Try telling the story in one sentence.
+Why would one bright patch, or one volunteer, be too little evidence for a conclusion?
+
+<details><summary><b>ONE POSSIBLE SUMMARY</b></summary><br>Our team collects MRI and PET, aligns the scans, measures PET signal in mapped brain areas, and compares those measurements with stress ratings across people. Better preparation and more participants help us judge a pattern; they do not turn it into proof of cause and effect.</details>
+
+**This completes the main workshop.**
+The bonus below asks a new question: could we follow changes during a task, rather than compare PET measurements between visits?
         """
     ),
     md(
@@ -441,14 +488,6 @@ show_fmri_result(
     ),
     md(
         """
-## 10. Recap
-
-<div style="text-align:center;font-size:1.18em;padding:16px;background:#f3f1fa;border-radius:8px"><b>See the structure → line up the images → choose a brain area → measure → think carefully about what the number means</b></div>
-
-Try explaining the workflow in one sentence. Where could an error at the start change the final conclusion?
-
-<details><summary><b>ONE POSSIBLE SUMMARY</b></summary><br>We line up PET with MRI, check the match, use a labelled brain map to choose areas, measure PET signal, and remember what PET can and cannot tell us.</details>
-
 ### Sources and further reading
 
 - [TemplateFlow: reusable imaging templates and atlases](https://www.templateflow.org/)

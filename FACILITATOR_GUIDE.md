@@ -1,5 +1,9 @@
 # Facilitator guide: brain stress imaging workshop
 
+Use [PRESENTATION_RUN_SCRIPT.md](PRESENTATION_RUN_SCRIPT.md) for the spoken story, transitions, screen cues, and limits on technical detail.
+Students are researchers investigating what happens in the brain during stress and testing candidate regions implicated by earlier research.
+The notebook follows their study: scans, alignment, a brain map, regional measurements, and evidence across people.
+
 The [full workshop notebook](NeuroPET_exercise.ipynb) is written so students can
 run every cell and read it later without a presenter. In class, pause at the
 predictions and let students experiment with the two registration numbers.
@@ -10,13 +14,15 @@ full version proves too long.
 
 | Time | Activity | Ask students |
 |---:|---|---|
-| 0–8 min | Meet MRI and PET; short MRI clip, molecule drawings, and scan images | Which scan shows structure more clearly? What does the PET colour mean? |
-| 8–14 min | Name atlas areas, then introduce the four focus regions | Which outlines match the named reference images? |
-| 14–27 min | Two scanner visits and manual registration | What happens if you change only left/right, then only up/down? |
-| 27–34 min | Match score | Can you improve the number without being told the answer? |
-| 34–42 min | Computer search | Does the computer improve on your match? |
-| 42–51 min | Regional measurements and PET patterns | Why can a small position error change a regional average? |
-| 51–60 min | Group-size exercise and recap | Does a larger group change the underlying effect, or our confidence in the pattern? |
+| 0–3 min | Research question and candidate regions | How could you investigate which brain regions are implicated in stress? |
+| 3–13 min | MRI and PET; short clip, molecules, and scan images | What information does each scanner add? |
+| 13–26 min | Separate scanner visits and manual registration | What went wrong when we combined the scans? |
+| 26–32 min | Match score | How could a computer judge your match? |
+| 32–38 min | Computer search and preprocessing | Does the computer improve on your match? |
+| 38–46 min | Atlas identification, then region functions | Where should we measure, and why those areas? |
+| 46–51 min | Regional measurements and PET patterns | Which measurements differ between the examples? |
+| 51–58 min | Group-size exercise | Does a larger group change the underlying effect, or our confidence in the pattern? |
+| 58–60 min | Close the main study story | How did our team get from scans to evidence? |
 | Optional 15–20 min | fMRI bonus | Why are repeated images useful when one image is noisy? |
 
 These are pacing suggestions. For a one-hour session, keep the PET-pattern
@@ -47,6 +53,8 @@ section timings visible to students.
 - **PET-pattern comparison:** The second pattern contains deliberately added
   signal near selected regions. The increments are teaching choices, not
   measured stress effects. No single pattern diagnoses stress.
+  The displayed PET slice supports measurements in three areas; the anterior cingulate is shown at another level in the atlas.
+  The group-size exercise includes all four to illustrate what a whole-brain study might measure.
 - **Group-size exercise:** Students change `number_of_study_participants` and
   rerun one cell to draw a new group. The built-in links are strong for amygdala,
   moderate for insula, weak for hippocampus, and absent for anterior cingulate.
