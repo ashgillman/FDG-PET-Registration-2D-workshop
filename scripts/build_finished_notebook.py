@@ -7,8 +7,8 @@ from nbclient import NotebookClient
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "NeuroPET_exercise.ipynb"
-DESTINATION = ROOT / "dist" / "NeuroPET_exercise_finished.ipynb"
+SOURCE = ROOT / "NeuroSTEM_exercise.ipynb"
+DESTINATION = ROOT / "dist" / "NeuroSTEM_exercise_finished.ipynb"
 
 
 def main():

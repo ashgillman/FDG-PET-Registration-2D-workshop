@@ -19,7 +19,7 @@ jobs:
         run: nix develop --command python scripts/build_finished_notebook.py
       - uses: actions/upload-artifact@v4
         with:
-          name: NeuroPET-exercise-finished
-          path: dist/NeuroPET_exercise_finished.ipynb
+          name: NeuroSTEM-exercise-finished
+          path: dist/NeuroSTEM_exercise_finished.ipynb
           if-no-files-found: error
           retention-days: 90

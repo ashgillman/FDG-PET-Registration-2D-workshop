@@ -1,10 +1,12 @@
-# Facilitator guide: brain stress imaging workshop
+# Facilitator guide: Computing of Neuroscience Data
+
+One of four NeuroSTEM workshops.
 
 Use [PRESENTATION_RUN_SCRIPT.md](PRESENTATION_RUN_SCRIPT.md) for the spoken story, transitions, screen cues, and limits on technical detail.
 Students are researchers investigating what happens in the brain during stress and testing candidate regions implicated by earlier research.
 The notebook follows their study: scans, alignment, a brain map, regional measurements, and evidence across people.
 
-The [full workshop notebook](NeuroPET_exercise.ipynb) is written so students can
+The [full workshop notebook](NeuroSTEM_exercise.ipynb) is written so students can
 run every cell and read it later without a presenter. In class, pause at the
 predictions and let students experiment with the two registration numbers.
 A shorter student edition can be made later if the

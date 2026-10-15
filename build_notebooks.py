@@ -35,7 +35,11 @@ def code(text):
 student_cells = [
     md(
         """
-# 🧠 Brain imaging and stress: line up the images
+# 🧠 Computing of Neuroscience Data
+
+**NeuroSTEM** · One of four workshops
+
+Brain imaging and stress: line up the images
 
 You are a researcher who wants to know **what happens in the brain when people are stressed**.
 Which brain regions are involved, and how can you find evidence for their involvement?
@@ -501,5 +505,5 @@ show_fmri_result(
 ]
 
 
-nbf.write(notebook(student_cells), ROOT / "NeuroPET_exercise.ipynb")
-print("Built NeuroPET_exercise.ipynb")
+nbf.write(notebook(student_cells), ROOT / "NeuroSTEM_exercise.ipynb")
+print("Built NeuroSTEM_exercise.ipynb")

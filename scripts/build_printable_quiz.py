@@ -3,7 +3,7 @@
 
 Run with a Python environment containing ReportLab.
 The atlas figure is generated separately with the workshop Python environment:
-  MPLCONFIGDIR=/tmp/neuropet-matplotlib .venv/bin/python scripts/export_printable_atlas_quiz.py
+  MPLCONFIGDIR=/tmp/neurostem-matplotlib .venv/bin/python scripts/export_printable_atlas_quiz.py
   python scripts/build_printable_quiz.py
 """
 
@@ -16,9 +16,9 @@ from reportlab.pdfgen import canvas
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "output/pdf/NeuroPET_workshop_quiz.pdf"
+OUTPUT = ROOT / "output/pdf/NeuroSTEM_workshop_quiz.pdf"
 FIGURE = ROOT / "images/atlas_quiz.png"
-LARGE_OUTPUT = ROOT / "output/pdf/NeuroPET_workshop_quiz_large_print.pdf"
+LARGE_OUTPUT = ROOT / "output/pdf/NeuroSTEM_workshop_quiz_large_print.pdf"
 WORKSHOP_URL = "https://ashgillman.github.io/neurostem-2026/"
 
 
@@ -47,7 +47,7 @@ def footer(pdf):
 def build_quiz():
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     pdf = canvas.Canvas(str(OUTPUT), pagesize=A4)
-    pdf.setTitle("NeuroPET workshop - companion quiz")
+    pdf.setTitle("NeuroSTEM - Computing of Neuroscience Data - companion quiz")
     pdf.setAuthor("Ashley Gillman")
     width, height = A4
     left, right = 42, width - 42
@@ -62,8 +62,9 @@ def build_quiz():
         pdf.setLineWidth(0.45)
         pdf.line(x1, y, x2, y)
 
-    text(left, 794, "NeuroPET workshop", 22, True)
-    text(left, 772, "Companion quiz", 13)
+    text(left, 813, "NeuroSTEM", 12, True)
+    text(left, 787, "Computing of Neuroscience Data", 22, True)
+    text(left, 766, "Companion quiz", 13)
     text(left, 740, "Name:", 10)
     line(738, left + 35, 360)
     text(385, 740, "Date:", 10)
@@ -108,7 +109,7 @@ def build_quiz():
 
 def build_large_quiz():
     pdf = canvas.Canvas(str(LARGE_OUTPUT), pagesize=A4)
-    pdf.setTitle("NeuroPET workshop - large-print companion quiz")
+    pdf.setTitle("NeuroSTEM - Computing of Neuroscience Data - large-print companion quiz")
     pdf.setAuthor("Ashley Gillman")
     left, right = 42, A4[0] - 42
 
@@ -123,7 +124,8 @@ def build_large_quiz():
         pdf.setLineWidth(0.8)
         pdf.line(x1, y, x2, y)
 
-    text(800, "NeuroPET workshop", size=28, bold=True)
+    text(817, "NeuroSTEM", size=16, bold=True)
+    text(790, "Computing of Neuroscience Data", size=24, bold=True)
     text(767, "Companion quiz - page 1 of 2")
     text(727, "Name:")
     line(724, left + 79, right)

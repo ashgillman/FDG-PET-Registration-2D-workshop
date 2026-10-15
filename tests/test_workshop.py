@@ -18,7 +18,7 @@ DATA = Path("data/workshop_templateflow.npz")
 
 def test_measurements_work_when_computer_search_cell_is_skipped():
     """Students can jump to measurements after loading the toolkit."""
-    notebook = json.loads(Path("NeuroPET_exercise.ipynb").read_text())
+    notebook = json.loads(Path("NeuroSTEM_exercise.ipynb").read_text())
     cells = ["".join(cell["source"]) for cell in notebook["cells"]
              if cell["cell_type"] == "code"]
     namespace = {}

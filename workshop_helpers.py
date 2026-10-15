@@ -1,4 +1,4 @@
-"""Small, student-facing helpers for the NeuroPET registration workshop."""
+"""Small, student-facing helpers for the NeuroSTEM registration workshop."""
 
 from __future__ import annotations
 

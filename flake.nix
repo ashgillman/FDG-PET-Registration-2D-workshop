@@ -1,5 +1,5 @@
 {
-  description = "Reproducible environment for the NeuroPET workshop and finished notebook";
+  description = "Reproducible environment for the NeuroSTEM workshop and finished notebook";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
