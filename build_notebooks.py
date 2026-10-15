@@ -52,13 +52,23 @@ The aim is to find evidence, rather than assume that every candidate region must
 > These pictures are teaching materials. The MRI anatomy and region labels come from shared research resources; the PET values are made for this lesson. They are not scans of a patient and cannot diagnose stress.
 
 <div style="padding:12px 16px;border-left:6px solid #31688e;background:#eef6fb"><b>Our research question</b><br>Which brain regions are implicated in stress?<br><b>Our study</b><br>Collect scans → prepare the images → identify regions → measure → test the evidence across people</div>
+
+<div style="text-align:right;margin-top:12px;font-size:0.85em;color:#666"><a href="https://github.com/ashgillman/FDG-PET-Registration-2D-workshop" style="color:inherit;text-decoration:none"><svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14" style="vertical-align:-2px;fill:currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38v-1.49c-2.23.48-2.7-.95-2.7-.95-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.22.82 1.22.82.71 1.21 1.87.86 2.33.66.07-.52.28-.86.51-1.06-1.78-.2-3.64-.89-3.64-3.96 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.65 7.65 0 0 1 8 5.85c.68 0 1.36.09 2 .27 1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.08-1.87 3.76-3.65 3.96.29.25.55.73.55 1.47v2.18c0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg> View source code on GitHub</a></div>
         """
     ),
     md(
         """
-## 1. RUN THIS — open the imaging toolkit
+## 1. Let the computer help with the work
 
-Click the cell below, then press **Shift + Enter**. The code is complete; you do not need to type anything.
+Brain-imaging studies can produce a lot of data.
+We do not want to process every scan by hand, so we can use computers to do repetitive work for us.
+
+To do that, we give a computer instructions in a **programming language**.
+Python is a popular language for science: it is relatively simple to read and write, and it has many powerful tools for working with data.
+
+Someone has already prepared the imaging tools for this workshop.
+The code below loads them and gets our example scans ready.
+Click the cell, then press **Shift + Enter** to run it; you do not need to type or change anything.
         """
     ),
     code(
@@ -96,6 +106,8 @@ Two scanners help us answer those different questions.
 
 ### MRI: what tissue is where?
 
+MRI is short for **magnetic resonance imaging** — a long name for the scan that gives us a detailed picture of the brain's structure.
+
 <img src="images/mri_scanner.jpg" alt="A modern MRI scanner" width="480">
 
 An MRI scanner uses a strong magnet and short pulses of radio waves. Different tissues respond in different ways, so the scanner can make a detailed picture of the brain's structure. MRI helps answer **what tissue is where?**
@@ -106,9 +118,14 @@ If the clip link does not play, [open the original video](https://www.youtube.co
 
 ### PET: what is the body doing?
 
+PET is short for **positron emission tomography** — another long name, for a scan that helps us see where a tracer has gone.
+
 <img src="images/pet_scanner.jpg" alt="A modern PET/CT scanner" width="480">
 
-For PET, a person receives a small injection of a **tracer**. A tracer is a substance we can follow inside the body. It has a radioactive tag that gives off signals the PET scanner can detect. Think of the tag as making the substance visible to the scanner.
+For PET, a person receives a small injection of a **tracer**.
+The tracer is a substance that does something important and relevant to what we want to measure in the body.
+A tracer is also a substance we can follow inside the body.
+It has a radioactive tag that gives off signals the PET scanner can detect, so we can measure where it goes.
 
 The tracer in this lesson is called **FDG**. It is similar to glucose, a sugar cells use for energy. By seeing where FDG collects, we get clues about glucose use. This is why PET can help answer **what is the body doing?** It does not show thoughts or measure stress directly. It also looks blurrier than MRI.
 
@@ -194,7 +211,7 @@ show_score(student_score, label="Your match score");
     ),
     md(
         """
-<details><summary><b>NEED A HINT?</b></summary><br>Decide left/right before up/down and change one number at a time. First try whole millimetres, then add one decimal place near your best result.</details>
+<details><summary><b>NEED A HINT?</b></summary><br>Decide left/right before up/down and change one number at a time. Moving in the wrong direction? Try a negative number. First try whole millimetres, then add one decimal place near your best result.</details>
 
 <details><summary><b>SHOW THE MANUAL SOLUTION</b></summary><br>The best-scoring correction is <code>x_correction_mm = -7.2</code> and <code>y_correction_mm = 5.3</code>.</details>
         """
@@ -278,7 +295,8 @@ show_atlas(region_to_show, data);
         """
 ### Match the pictures to names
 
-Use these four names: **Insula**, **Hippocampus**, **Anterior cingulate**, **Amygdala**.
+Use the atlas explorer to identify each region outlined in pictures **A–D**.
+Record the atlas name beside each letter, using the slice level where the outline appears to help you.
 Double-click this text cell to fill in your answers, then press **Shift + Enter**:
 
 - A: ...
