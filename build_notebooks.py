@@ -353,7 +353,7 @@ These are **relative FDG signal** values: useful for comparing these teaching im
     code(
         """
 measurement_figure, registered_values = show_region_measurements(
-    optimise(mri, challenge_pet)[0], region_masks,
+    automatic_pet, region_masks,
     title="Average PET signal after alignment",
 )
 display(Markdown(
