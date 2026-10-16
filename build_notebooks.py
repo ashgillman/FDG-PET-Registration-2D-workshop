@@ -430,6 +430,8 @@ show_stress_associations(number_of_study_participants);
     md(
         """
 <details><summary><b>WHAT DO THE DOTS SUGGEST?</b></summary><br>In this teaching example, the amygdala has the strongest built-in link, the insula has a smaller one, the hippocampus has a weak one, and the anterior cingulate has none. With only 5 or 10 people, random variation can make even an area with no built-in link look convincing. At 500, the stronger patterns are clearer, but the weak one may still be hard to judge. Correlation alone cannot show that stress <i>caused</i> a PET change.</details>
+
+**Would you reach a different conclusion with 10 participants than with 100? If so, which conclusion is more likely to be true?**
         """
     ),
     md(

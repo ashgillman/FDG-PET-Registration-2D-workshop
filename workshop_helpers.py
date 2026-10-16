@@ -517,7 +517,20 @@ def show_stress_associations(n_volunteers: int):
         raise ValueError("Choose between 5 and 500 volunteers")
 
     rng = np.random.default_rng()
-    stress = rng.uniform(0, 10, n_volunteers)
+    cohort_size = 500
+    stress = rng.uniform(0, 10, cohort_size)
+
+    # Select a null-data cohort with a chance-looking positive prefix.
+    while True:
+        anterior_noise = rng.normal(0, 0.10, cohort_size)
+        prefix_r = [
+            np.corrcoef(stress[:n], anterior_noise[:n])[0, 1]
+            for n in (5, 10, 50, cohort_size)
+        ]
+        if (prefix_r[0] > 0.55 and prefix_r[1] > 0.60
+                and abs(prefix_r[2]) < 0.30 and abs(prefix_r[3]) < 0.12):
+            break
+
     regions = (
         ("Amygdala", 0.54, 0.035),
         ("Insula", 0.51, 0.018),
@@ -529,8 +542,11 @@ def show_stress_associations(n_volunteers: int):
     fig.subplots_adjust(left=0.10, right=0.98, bottom=0.11, top=0.88,
                         hspace=0.30, wspace=0.16)
     for ax, (name, baseline, slope) in zip(axes.flat, regions):
-        signal = baseline + slope * (stress - 5) + rng.normal(0, 0.10, n_volunteers)
-        x, y = stress, signal
+        if name == "Anterior cingulate":
+            signal = baseline + anterior_noise
+        else:
+            signal = baseline + slope * (stress - 5) + rng.normal(0, 0.10, cohort_size)
+        x, y = stress[:n_volunteers], signal[:n_volunteers]
         ax.scatter(x, y, s=38 if n_volunteers <= 50 else 19, alpha=0.6,
                    color=REGION_COLOURS[name], edgecolors="none")
         association = np.corrcoef(x, y)[0, 1]
