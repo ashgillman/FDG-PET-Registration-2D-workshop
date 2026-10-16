@@ -112,9 +112,8 @@ MRI is short for **magnetic resonance imaging** — a long name for the scan tha
 
 An MRI scanner uses a strong magnet and short pulses of radio waves. Different tissues respond in different ways, so the scanner can make a detailed picture of the brain's structure. MRI helps answer **what tissue is where?**
 
-[Watch a short animation of how MRI works — the first two minutes](https://www.youtube.com/embed/FvOezMIL9BU?start=0&end=120).
-Watch for three steps: the magnet lines up tiny magnets in the body, radio waves tip them, and the scanner detects their response.
-If the clip link does not play, [open the original video](https://www.youtube.com/watch?v=FvOezMIL9BU) and stop at **2:00**.
+[Watch a short video about MRI](https://www.youtube.com/embed/H76keASoUEU).
+If the embedded video does not play, [open it on YouTube](https://www.youtube.com/shorts/H76keASoUEU).
 
 ### PET: what is the body doing?
 
@@ -143,7 +142,7 @@ Both pictures below show a slice through the brain, as though we looked down fro
 
 ### PREDICT
 
-Which image shows the edges of brain structures most clearly? Which image shows where more FDG has collected?
+Which image shows the edges of brain structures most clearly? Which image shows more energy consumption?
         """
     ),
     code(
@@ -282,7 +281,7 @@ An **atlas** is that labelled map of the brain.
 Use the atlas explorer below as a reference, then name the areas outlined in pictures **A–D**.
 Each picture is a slice through the brain; different areas are easiest to see at different slice levels.
 
-Try these names: **Hippocampus**, **Amygdala**, **Insula**, **Anterior cingulate**, **Thalamus**, **Caudate**, **Putamen**, **Brainstem**, **Cerebellum**, **Lateral occipital**, **Precentral**, **Postcentral**, **Superior temporal**, or **Lateral ventricle**.
+Try these names: **Amygdala**, **Anterior cingulate**, **Brainstem**, **Caudate**, **Cerebellum**, **Hippocampus**, **Insula**, **Lateral occipital**, **Lateral ventricle**, **Postcentral**, **Precentral**, **Putamen**, **Superior temporal**, or **Thalamus**.
         """
     ),
     code(
@@ -525,5 +524,7 @@ show_fmri_result(
 ]
 
 
-nbf.write(notebook(student_cells), ROOT / "NeuroSTEM_exercise.ipynb")
-print("Built NeuroSTEM_exercise.ipynb")
+student_notebook = notebook(student_cells)
+for filename in ("NeuroSTEM_exercise.ipynb", "NeuroPET_exercise.ipynb"):
+    nbf.write(student_notebook, ROOT / filename)
+    print(f"Built {filename}")

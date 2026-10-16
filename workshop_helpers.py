@@ -175,18 +175,13 @@ def show_mri_and_pet(mri: np.ndarray, pet: np.ndarray):
     """Show the two scans and a simple combined view."""
     fig, axes = plt.subplots(1, 3, figsize=(14, 4.6), constrained_layout=True)
     axes[0].imshow(mri, cmap="gray", vmin=0, vmax=1)
-    axes[0].set_title("MRI: detailed anatomy", fontsize=14)
     pet_artist = axes[1].imshow(pet, cmap=PET_CMAP, vmin=PET_VMIN, vmax=PET_VMAX)
-    axes[1].set_title("PET: where FDG collected", fontsize=14)
     axes[2].imshow(mri, cmap="gray", vmin=0, vmax=1)
     axes[2].imshow(np.ma.masked_less(pet, 0.15), cmap=PET_CMAP,
                    vmin=PET_VMIN, vmax=PET_VMAX, alpha=0.60)
-    axes[2].set_title("Together: anatomy + PET", fontsize=14)
     _finish_axes(axes)
     fig.colorbar(pet_artist, ax=axes[1], shrink=0.82,
                  label="FDG signal (relative units)")
-    fig.suptitle("Two images, two kinds of information", fontsize=16,
-                 fontweight="bold")
     return fig
 
 
